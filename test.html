@@ -14,11 +14,31 @@
 	.row>[class^=col-] {
 		border: 1px solid rgba(86,61,124,.2);
 	}
+	.thumbnail {
+	    padding: 0;
+		width: auto;
+		height: 300px;
+	}
+	.thumbnail-foo {
+	    margin: 0 auto;
+		width: 200px;
+		height: 150px;
+		background-color: gray;
+		border: 1px solid green;
+	}
+	.thumbnail-content {
+		padding: .3rem;
+		width: auto;
+		height: auto;
+	}
+	.card {
+	    min-width: 15rem;
+	}
 	</style>
   </head>
   <body>
 	<div class="container-fluid">
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
 	  <h1 class="navbar-brand" href="#">OurTube</h1>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
@@ -26,24 +46,74 @@
 
 	  <div class="collapse navbar-collapse" id="navbar">
 		<ul class="navbar-nav">
-		  <li class="nav-item active">
-			<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMainMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			  精選頻道
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownMainMenu">
+			  <a class="dropdown-item" href="#">中英文雙字幕影片</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="#">深度英文演講</a>
+			  <a class="dropdown-item" href="#">知識型動畫</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="#">看BBC學英文</a>
+			  <a class="dropdown-item" href="#">看CNN學英文</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="#">TOEIC 多益考試</a>
+			  <a class="dropdown-item" href="#">TOFEL 托福考試</a>
+			  <a class="dropdown-item" href="#">IELTS 雅思 <span class="badge badge-danger">NEW</span></a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="#">阿滴英文 </a>
+			  <a class="dropdown-item" href="#">主編解析 <span class="badge badge-danger">NEW</span></a>
+			</div>
 		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#">Features</a>
-		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#">Pricing</a>
+		  <li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLevels" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			  程度分級
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownLevels">
+			  <div class="dropright" href="#">
+			    <a class="dropdown-item dropdown-toggle" href="#" id="levelsDropdownLevel1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">初級: TOEIC 250-545</a>
+				<div class="dropdown-menu" aria-labelledby="levelsDropdownLevel1">
+				  <a class="dropdown-item" href="#">a</a>
+				</div>
+			  </div>
+			  <div class="dropright" href="#">
+			    <a class="dropdown-item dropdown-toggle" href="#" id="levelsDropdownLevel1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">中級: TOEIC 550-780</a>
+				<div class="dropdown-menu" aria-labelledby="levelsDropdownLevel1">
+				  <a class="dropdown-item" href="#">a</a>
+				</div>
+			  </div>
+			  <div class="dropright" href="#">
+			    <a class="dropdown-item dropdown-toggle" href="#" id="levelsDropdownLevel1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">高級: TOEIC 785-990</a>
+				<div class="dropdown-menu" aria-labelledby="levelsDropdownLevel1">
+				  <a class="dropdown-item" href="#">a</a>
+				</div>
+			  </div>
+			</div>
 		  </li>
 		  <li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			  Dropdown link
+			  聽力口說
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-			  <a class="dropdown-item" href="#">Action</a>
-			  <a class="dropdown-item" href="#">Another action</a>
-			  <a class="dropdown-item" href="#">Something else here</a>
+			  <a class="dropdown-item" href="#">每日口說挑戰</a>
+			  <a class="dropdown-item" href="#">聽力測驗</a>
 			</div>
+		  </li>
+		  <li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			  社群
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+			  <a class="dropdown-item" href="#">激勵牆</a>
+			  <a class="dropdown-item" href="#">翻譯社群</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="#">VoiceTube Campus</a>
+			</div>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="#">匯入影片</a>
 		  </li>
 		</ul>
 	  </div>
@@ -51,16 +121,56 @@
 	</div>
 	<div class="container">
 		<div class="row">
-		  <div class="col-12 col-sm-9 content ">
-			main content(videos)
+		  <div class="col-12 col-sm-8 content ">
+			<div class="row">
+			<h1>每日最新影片</h1>
+			</div>
+			<div class="row">
+			  <div class="col-12 col-lg-4">
+				<div class="thumbnail">
+				  <div class="thumbnail-foo"></div>
+				  <div class="thumbnail-content">
+					This is a video.
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-12 col-lg-4">
+				<div class="thumbnail">
+				  <div class="thumbnail-foo"></div>
+				  <div class="thumbnail-content">
+					This is a video too.
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-12 col-lg-4">
+				<div class="thumbnail">
+				  <div class="thumbnail-foo"></div>
+				  <div class="thumbnail-content">
+					This is a video too.
+				  </div>
+				</div>
+			  </div>
+			</div>
 		  </div>
-		  <div class="col-12 col-sm-3 d-none d-sm-block sidebar ">
-			sidebar
-		  </div>
-		</div>
-		<div class="row">
-		  <div class="col-12 d-block d-sm-none">
-		    sidebar-sm
+		  <div class="col-12 col-sm-4">
+			<div class="card">
+			  <img class="card-img-top" src=".../100px180/" alt="Card image cap">
+			  <div class="card-body">
+				<h5 class="card-title">Card title</h5>
+				<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+				<a href="#" class="btn btn-primary">Go somewhere</a>
+			  </div>
+			</div>
+			<div class="card">
+			  <div class="card-header">
+				Featured
+			  </div>
+			  <ul class="list-group list-group-flush">
+				<li class="list-group-item">Cras justo odio</li>
+				<li class="list-group-item">Dapibus ac facilisis in</li>
+				<li class="list-group-item">Vestibulum at eros</li>
+			  </ul>
+			</div>
 		  </div>
 		</div>
 	</div>
