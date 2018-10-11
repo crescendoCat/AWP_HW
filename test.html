@@ -6,35 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
-    <title>Hello, world!</title>
-	
-	<style>
-	.row>[class^=col-] {
-		border: 1px solid rgba(86,61,124,.2);
-	}
-	.thumbnail {
-	    padding: 0;
-		width: auto;
-		height: 300px;
-	}
-	.thumbnail-foo {
-	    margin: 0 auto;
-		width: 200px;
-		height: 150px;
-		background-color: gray;
-		border: 1px solid green;
-	}
-	.thumbnail-content {
-		padding: .3rem;
-		width: auto;
-		height: auto;
-	}
-	.card {
-	    min-width: 15rem;
-	}
-	</style>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" 
+			integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" 
+      integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="./assets/css/styles.css"/>
+    <title>OurTube</title>
   </head>
   <body>
 	<div class="container-fluid">
@@ -119,59 +96,91 @@
 	  </div>
 	</nav>
 	</div>
-	<div class="container">
+	<div class="container-fluid" id="home_main">
 		<div class="row">
-		  <div class="col-12 col-sm-8 content ">
-			<div class="row">
-			<h1>每日最新影片</h1>
-			</div>
-			<div class="row">
-			  <div class="col-12 col-lg-4">
-				<div class="thumbnail">
-				  <div class="thumbnail-foo"></div>
-				  <div class="thumbnail-content">
-					This is a video.
-				  </div>
+			<div class="col-md-9 col-sm-12 col-xs-12">
+				<div>
+					<img src="./assets/images/hero_ad_banner.png" alt="banner_ad" class="img-center">
 				</div>
-			  </div>
-			  <div class="col-12 col-lg-4">
-				<div class="thumbnail">
-				  <div class="thumbnail-foo"></div>
-				  <div class="thumbnail-content">
-					This is a video too.
-				  </div>
+				<div class="row section-title__latest">
+					<h4>英文學習最新影片</h4>
 				</div>
-			  </div>
-			  <div class="col-12 col-lg-4">
-				<div class="thumbnail">
-				  <div class="thumbnail-foo"></div>
-				  <div class="thumbnail-content">
-					This is a video too.
-				  </div>
+				<div class="row">
+					<ul class="thumbnails-menu__latest">
+						<div class="row">
+							<li class="thumbnail-card col-md-3 col-sm-6 col-xs-12">
+								<div class="thumbnail-img">
+									<img src="https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg"
+										data-original="https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg"
+										alt="如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))"/>
+								</div>
+								<div class="thumbnail-intro">
+									<h6 class="thumbnail-title" 
+											data-original-title="如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))">
+										<a href="#"><span>如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))</span></a>
+									</h6>
+									<div class="vertical-middle">
+										<i class="fas fa-headphones"></i>
+										<span>1683</span>
+									</div>
+								</div>
+							</li>
+							<li class="thumbnail-card col-md-3 col-sm-6">
+								<div class="thumbnail-img">
+									<img src="https://cdn.voicetube.com/assets/thumbnails/fsqTowzxzK8_s.jpg"
+										data-original="https://cdn.voicetube.com/assets/thumbnails/fsqTowzxzK8_s.jpg"
+										alt="停止戰系！選主修真的超難 (Choosing Majors is Hard)"/>
+								</div>
+								<div class="thumbnail-intro">
+									<h6 data-original-title="停止戰系！選主修真的超難 (Choosing Majors is Hard)">
+										<a href="#"><span>停止戰系！選主修真的超難 (Choosing Majors is Hard)</span></a>
+									</h6>
+									<div class="vertical-middle">
+										<i class="fas fa-headphones"></i>
+										<span>659</span>
+									</div>
+								</div>
+							</li>
+							<li class="thumbnail-card col-md-3 col-sm-6">
+								<div class="thumbnail-img">
+									<img src="https://cdn.voicetube.com/assets/thumbnails/FpH28kCk9ww_s.jpg"
+										data-original="https://cdn.voicetube.com/assets/thumbnails/FpH28kCk9ww_s.jpg"
+										alt="英語學習：談論未來 (Learn English: Talking About the Future)"/>
+								</div>
+								<div class="thumbnail-intro">
+									<h6 data-original-title="英語學習：談論未來 (Learn English: Talking About the Future)">
+										<a href="#"><span>英語學習：談論未來 (Learn English: Talking About the Future)</span></a>
+									</h6>
+									<div class="vertical-middle">
+										<i class="fas fa-headphones"></i>
+										<span>1672</span>
+									</div>
+								</div>
+							</li>
+						</div>
+					</ul>
 				</div>
-			  </div>
 			</div>
-		  </div>
-		  <div class="col-12 col-sm-4">
-			<div class="card">
-			  <img class="card-img-top" src=".../100px180/" alt="Card image cap">
-			  <div class="card-body">
-				<h5 class="card-title">Card title</h5>
-				<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-				<a href="#" class="btn btn-primary">Go somewhere</a>
-			  </div>
+			<div class="col-md-3 col-sm-12 col-xs-12">
+				<div class="col-12 col-sm-4">
+					<div class="card">
+						<img class="card-img-top" src=".../100px180/" alt="Card image cap">
+						<div class="card-body">
+							<h5 class="card-title">Card title</h5>
+							<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+							<a href="#" class="btn btn-primary">Go somewhere</a>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-header">Featured</div>
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">Cras justo odio</li>
+							<li class="list-group-item">Dapibus ac facilisis in</li>
+							<li class="list-group-item">Vestibulum at eros</li>
+						</ul>
+					</div>
+				</div>
 			</div>
-			<div class="card">
-			  <div class="card-header">
-				Featured
-			  </div>
-			  <ul class="list-group list-group-flush">
-				<li class="list-group-item">Cras justo odio</li>
-				<li class="list-group-item">Dapibus ac facilisis in</li>
-				<li class="list-group-item">Vestibulum at eros</li>
-			  </ul>
-			</div>
-		  </div>
 		</div>
 	</div>
     <!-- Optional JavaScript -->

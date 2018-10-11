@@ -1,0 +1,65 @@
+/* .row>[class^=col-] {
+  border: 1px solid rgba(86,61,124,.2);
+} */
+
+/* font style */
+body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { 
+  font-family: Microsoft YaHei,'宋体' , Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif;
+}
+
+#home_main {
+  height: 100%;
+  background-image: url(http://api.thumbr.it/whitenoise-361x370.png?background=ebebebff&noise=adadad&density=42&opacity=17);
+  padding: 3% 10%;
+}
+
+/* latest video menu */
+.section-title__latest {
+  margin: 30px 0px;
+  font-size: 26px;
+  letter-spacing: 2px;
+  color: #777;
+}
+
+.thumbnails-menu__latest {
+  list-style-type: none;
+  padding-inline-start: 0px;
+}
+.thumbnail-card {
+  background-color: white;
+  padding: 0px;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 0 rgba(0,0,0,.1);
+}
+.thumbnail-img {
+  padding: 0px;
+  border: none;
+}
+.thumbnail-img img {
+  width: 100%;
+}
+.thumbnail-intro {
+  padding: 5px;
+}
+.thumbnail-intro span, i {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Home Ad */
+.card {
+  min-width: 15rem;
+}
+
+/* General */
+.vertical-middle {
+  vertical-align : middle;
+}
+.img-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
