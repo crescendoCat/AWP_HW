@@ -46,6 +46,10 @@ body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 {
 }
 .sidebar{
   min-width: 15rem;
+  margin-top: 1rem;
+}
+.card-panel{
+  padding-top: .5rem;
 }
 .image-href{
   border: 0;
@@ -57,8 +61,7 @@ body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 {
 }
 .img-center {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
 .video-container {
 //using for video RWD;
