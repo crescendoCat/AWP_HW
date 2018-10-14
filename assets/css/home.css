@@ -63,20 +63,6 @@ body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 {
   display: block;
   margin: 0 auto;
 }
-.video-container {
-//using for video RWD;
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 56.25%;
-}
-.video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
 .main-content {
 	margin-top: 6rem;
 }
