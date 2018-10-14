@@ -7,8 +7,8 @@ $(document).ready(function(){
 	$('[data-toggle="popover"]').popover();
 });
 
-const video_page = "./../../video.html";
-const apologize_page = "./../../apologize.html";
+const video_page = "./video.html";
+const apologize_page = "./apologize.html";
 const latest_videos_json = [
 	{ "title": "The strangest moments from Donald Trump's UN press conference",
 		"thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q",
