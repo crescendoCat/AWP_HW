@@ -1,4 +1,4 @@
-body { font-family: 'helvetica'; }
+﻿body { font-family: 'helvetica'; }
 #container_caption {
   height: 400px;
 overflow: auto;
@@ -33,7 +33,4 @@ a:hover {
 
 a:active {
     text-decoration: underline;
-}
-#embed-code {
-	border: solid 4px #37474F;
 }
