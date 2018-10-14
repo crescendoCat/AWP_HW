@@ -1,83 +1,57 @@
-$(document).ready(function(){
-	const latest_menu = document.getElementsByClassName("latest_menu")[0];
-	latest_menu.appendChild(
-		createMenu(latest_videos_json)
-	);
 
-	$('[data-toggle="popover"]').popover();
-});
 
 const video_page = "./video.html";
 const apologize_page = "./apologize.html";
-const latest_videos_json = [
-	{ "title": "The strangest moments from Donald Trump's UN press conference",
-		"thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg",
-		"link": video_page,
-		"view": 15
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	},
-	{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever (advice for myself and other chronically late people))",
-		"thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg",
-		"link": apologize_page,
-		"view": 1683
-	}
-];
-
-function createMenu(videos_json) {
-	const menu = document.createElement("div");
-	menu.setAttribute("class", "row");
-	videos_json.forEach(video => {
+const latest_videos_json = 
+'[{"title": "The strangest moments from Donald Trump\'s UN press conference","thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg","link": "./video.html","view": 15},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683}]';
+$(document).ready(function(){
+	var latest_menu = document.getElementsByClassName("latest_menu")[0];
+	var videos = JSON.parse(latest_videos_json);
+	for(var i in videos) {
 		const card_panel = document.createElement("div");
 		card_panel.setAttribute("class", "col-12 col-md-5 col-lg-4 col-xl-3 card-panel");
 		const card_shadow = document.createElement("div");
 		card_shadow.setAttribute("class", "card shadow");
 
-		const card_thumbnail = createCardThumbnail(video["thumbnail_img"], video["link"]);
-		const card_body = createCardBody(video["title"], video["link"], video["view"]);
+		const card_thumbnail = createCardThumbnail(videos[i]["thumbnail_img"], videos[i]["link"]);
+		const card_body = createCardBody(videos[i]["title"], videos[i]["link"], videos[i]["view"]);
+		card_shadow.appendChild(card_thumbnail);
+		card_shadow.appendChild(card_body);
+		card_panel.appendChild(card_shadow);
+		
+		latest_menu.appendChild(card_panel);
+	}
+	$('[data-toggle="popover"]').popover();
+});
+
+//This function become unused
+function createMenu(videos_json) {
+	const menu = document.createElement("div");
+	menu.setAttribute("class", "row");
+	var videos = JSON.parse(videos_json);
+	for(var i in videos) {
+		const card_panel = document.createElement("div");
+		card_panel.setAttribute("class", "col-12 col-md-5 col-lg-4 col-xl-3 card-panel");
+		const card_shadow = document.createElement("div");
+		card_shadow.setAttribute("class", "card shadow");
+
+		const card_thumbnail = createCardThumbnail(videos[i]["thumbnail_img"], videos[i]["link"]);
+		const card_body = createCardBody(videos[i]["title"], videos[i]["link"], videos[i]["view"]);
 		card_shadow.appendChild(card_thumbnail);
 		card_shadow.appendChild(card_body);
 		card_panel.appendChild(card_shadow);
 		
 		menu.appendChild(card_panel);
-	});
+	}
 	return menu;
 }
 
 function createCardThumbnail(thumbnail_img, link) {
 	var thumbnail_image = document.createElement("img");
 	thumbnail_image.setAttribute("class", "card-img-top thumbnail img-center");
-	thumbnail_image.setAttribute("src", `${thumbnail_img}`);
+	thumbnail_image.setAttribute("src", thumbnail_img);
 	const thumbnail_with_link = document.createElement("a");
-	thumbnail_with_link.setAttribute("href", `${link}`);
+	thumbnail_with_link.setAttribute("href", link);
 	thumbnail_with_link.setAttribute("class", "image-href");
 	thumbnail_with_link.appendChild(thumbnail_image);
 
@@ -93,9 +67,9 @@ function createCardBody(title, link, view) {
 	title_with_popover.setAttribute("data-toggle", "popover");
 	title_with_popover.setAttribute("data-trigger", "hover");
 	title_with_popover.setAttribute("data-placement", "top");
-	title_with_popover.setAttribute("data-content", `${title}`);
+	title_with_popover.setAttribute("data-content", title);
 	const title_with_link = document.createElement("a");
-	title_with_link.setAttribute("href", `${link}`);
+	title_with_link.setAttribute("href", link);
 	const title_span = document.createElement("span");
 	title_span.innerHTML = title;
 	title_with_popover.appendChild(title_with_link.appendChild(title_span));
