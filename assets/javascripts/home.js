@@ -1,5 +1,3 @@
-
-
 const video_page = "./video.html";
 const apologize_page = "./apologize.html";
 const latest_videos_json = 
@@ -23,28 +21,6 @@ $(document).ready(function(){
 	}
 	$('[data-toggle="popover"]').popover();
 });
-
-//This function become unused
-function createMenu(videos_json) {
-	const menu = document.createElement("div");
-	menu.setAttribute("class", "row");
-	var videos = JSON.parse(videos_json);
-	for(var i in videos) {
-		const card_panel = document.createElement("div");
-		card_panel.setAttribute("class", "col-12 col-md-5 col-lg-4 col-xl-3 card-panel");
-		const card_shadow = document.createElement("div");
-		card_shadow.setAttribute("class", "card shadow");
-
-		const card_thumbnail = createCardThumbnail(videos[i]["thumbnail_img"], videos[i]["link"]);
-		const card_body = createCardBody(videos[i]["title"], videos[i]["link"], videos[i]["view"]);
-		card_shadow.appendChild(card_thumbnail);
-		card_shadow.appendChild(card_body);
-		card_panel.appendChild(card_shadow);
-		
-		menu.appendChild(card_panel);
-	}
-	return menu;
-}
 
 function createCardThumbnail(thumbnail_img, link) {
 	var thumbnail_image = document.createElement("img");
