@@ -11,7 +11,7 @@ const video_page = "./video.html";
 const apologize_page = "./apologize.html";
 const latest_videos_json = [
 	{ "title": "The strangest moments from Donald Trump's UN press conference",
-		"thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q",
+		"thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg",
 		"link": video_page,
 		"view": 15
 	},
@@ -74,11 +74,11 @@ function createMenu(videos_json) {
 
 function createCardThumbnail(thumbnail_img, link) {
 	var thumbnail_image = document.createElement("img");
-	thumbnail_image.setAttribute("class", "card-img-top thumbnail");
+	thumbnail_image.setAttribute("class", "card-img-top thumbnail img-center");
 	thumbnail_image.setAttribute("src", `${thumbnail_img}`);
 	const thumbnail_with_link = document.createElement("a");
 	thumbnail_with_link.setAttribute("href", `${link}`);
-	thumbnail_with_link.setAttribute("class", "image-href mx-auto");
+	thumbnail_with_link.setAttribute("class", "image-href");
 	thumbnail_with_link.appendChild(thumbnail_image);
 
 	return thumbnail_with_link;
