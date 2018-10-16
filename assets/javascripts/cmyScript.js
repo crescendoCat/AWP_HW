@@ -14,8 +14,8 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); // Now added to the
 var player;
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
-		width:'100%',
-		height:'360',
+        width: '100%',
+        height: '360',
         videoId: 'WWG6jaBFYtU', //blcokchain 101:_160oMzblY8
         playerVars: { 'autoplay': 1, 'controls': 1 },
         events: {
@@ -77,13 +77,14 @@ function onPlayerReady(event) {
 
 
 function playVideo(startTime, endTime) {
+    console.log("start: " + startTime + " endTime:" + Number(endTime));
     player.seekTo(Number(startTime), true);
     player.playVideo();
 
     // 必須延遲些許時間，讓player開始播放影片，才可正確取得player.getCurrentTime()回傳值。
     // 經多次實驗後，25ms可正確取得player.getCurrentTime();
     setTimeout(function () {
-        pauseVideo(endTime);
+        pauseVideo(Number(endTime));
     }, 25);
 }
 
@@ -130,7 +131,8 @@ function checkPlayerCurrentTimeAndScrollToCaption() {
         if (currentTime >= start && currentTime < end) {
             objDiv.scrollTop = (i > 0 ? i - 1 : i) * move_downward;
             if (caps[i].innerHTML.indexOf('href=\"javascript:;\"') == -1) {
-                caps[i].innerHTML = "<a href='javascript:;' onclick=\"player.seekTo(" + start + "); playVideo(" + start + "," + end + ");\">\r<font color='red'>" + caps[i].innerHTML + "</font>\r<\a>";
+                caps[i].innerHTML = "<a href='javascript:;' onclick=\"player.pauseVideo(); playVideo(" + start + "," + end + ");\">\r<font color='red'>" + caps[i].innerHTML + "</font>\r<\a>";
+                //caps[i].innerHTML = "<a href='javascript:;' onclick=\"player.seekTo(" + start + "); playVideo(" + start + "," + end + ");\">\r<font color='red'>" + caps[i].innerHTML + "</font>\r<\a>";
                 clearTimeout(timer_checkPlayerCurrentTime);
             }
             return;
@@ -165,7 +167,7 @@ function changeBorderColor(playerStatus) {
     }
 
     if (color) {
-        console.log('change color: ' + document.getElementById('embed-code'));
+        // console.log('change color: ' + document.getElementById('embed-code'));
         document.getElementById('embed-code').style.borderColor = color;
     }
 }
@@ -177,12 +179,14 @@ var done = false;
 function onPlayerStateChange(event) {
     //console.log('current playback quality: ' + player.getPlaybackQuality());
     changeBorderColor(event.data);
-    console.log(event.data); // show the event type
+    //console.log(event.data); // show the event type
     if (event.data == YT.PlayerState.PLAYING) {
+
         // 由目前的執行時間，取得對應的字幕物件資訊
         var current = player.getCurrentTime();
         var c = JSON.parse(captionContents);
         var start, duration;
+       // console.log("PlayerState= PLAYING! CurrentTime:" + current);
         for (var i = 0; i < c.en.length; i++) {
             start = Number(c.en[i].start);
             duration = Number(c.en[i].dur);
@@ -193,14 +197,24 @@ function onPlayerStateChange(event) {
             }
         }
     }
-    console.log("onPlayerStateChange. Current time: " + player.getCurrentTime());
+    else {
+        console.log("onPlayerStateChange: " + event.data + "| Current time: " + player.getCurrentTime());
+    }
 }
 
 var handlerPauseTimeStamp = 0;  // 設定呼叫setTimeout(pauseTimeStamp)之handler
 function pauseVideo(pauseTimeStamp) {
     var current = player.getCurrentTime();
+    //console.log("pauseVideo_currentTime: " + current + " pauseTimeStamp: " + pauseTimeStamp);
     if (current == undefined || current < pauseTimeStamp) {
-        handlerPauseTimeStamp = setTimeout(pauseVideo, 100, pauseTimeStamp);
+        // 若已指派setTimeout，則清除該Timeout
+        clearTimeout(handlerPauseTimeStamp);
+        // 當YT.PlayerState.PLAYING時，若使用者隨意點選某一段字幕檔，
+        // 故當時狀態為為pause，則直接撥放video
+        if (player.getPlayerState() == YT.PlayerState.PAUSED) {
+            player.playVideo();
+        }
+        handlerPauseTimeStamp = setTimeout(pauseVideo, 10, pauseTimeStamp);
     } else {
         clearTimeout(handlerPauseTimeStamp);
         player.pauseVideo();
@@ -218,7 +232,7 @@ var captionContents = '{"en":[{ "id": "30937935", "caption_id": "141637", "seq":
 
 function bindCaption() {
     var c = JSON.parse(captionContents);
-    console.log('json' + c.en.length);
+    //console.log('json' + c.en.length);
 
     var captionElement = document.getElementById('table_caption');
     //console.log('table_caption: ' + captionElement.innerHTML);
@@ -226,7 +240,7 @@ function bindCaption() {
     var end = 0, start = 0;
     for (var i = 0; i < c.en.length; i++) {
         start = Number(c.en[i].start);
-        console.log('caption: ' + c.en[i].text);
+        //console.log('caption: ' + c.en[i].text);
         end = start + Number(c.en[i].dur);
         captionTableContent = captionTableContent + ('<tr><td start=\'' + start + '\' end=\'' + end + '\'>\n<a href=\"javascript:;\" onclick=\"playVideo(' + start + ',' + end + ');\">\r<span>' + c.en[i].text + '</span></a>\n</td></tr>\r');
     }
