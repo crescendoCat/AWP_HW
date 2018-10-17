@@ -20,6 +20,7 @@ const latest_videos_json =
     </div>
   </div>
 </div> */}
+
 $(document).ready(function(){
   var latest_menu = document.getElementsByClassName("latest_menu")[0];
   var videos = JSON.parse(latest_videos_json);
