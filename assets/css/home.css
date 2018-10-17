@@ -32,27 +32,18 @@ body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 {
   max-width: 200px;
   max-height: 150px;
 }
-.thumbnail-foo {
-    margin: 0 auto;
-  width: 200px;
-  height: 150px;
-  background-color: gray;
-  border: 1px solid green;
-}
-.thumbnail-content {
-  padding: .3rem;
-  width: auto;
-  height: auto;
-}
-.sidebar{
-  min-width: 15rem;
-  margin-top: 1rem;
-}
 .card-panel{
   padding-top: .5rem;
 }
 .image-href{
   border: 0;
+}
+.sidebar{
+  max-width: 15rem;
+  margin-top: 1rem;
+}
+.topbar {
+  max-width: 40rem;
 }
 
 /* general */

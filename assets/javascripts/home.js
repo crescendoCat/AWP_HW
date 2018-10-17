@@ -2,12 +2,30 @@ const video_page = "./video.html";
 const apologize_page = "./apologize.html";
 const latest_videos_json = 
 '[{"title": "The strangest moments from Donald Trump\'s UN press conference","thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg","link": "./video.html","view": 15},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683}]';
+
+{/* <div class="col-12 col-md-4 col-xl-3 card-panel">
+	<div class="card shadow">
+		<a href="video.html" class="image-href mx-auto">
+			<img class="card-img-top thumbnail" src="https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q" alt="Card image cap"/>
+		</a>
+		<div class="card-body thumbnail-intro">
+			<h6 class="thumbnail-title title-popover" data-toggle="popover" data-trigger="hover" data-placement="top" 
+					data-content="The strangest moments from Donald Trump's UN press conference">
+				<a href="#"><span>The strangest moments from Donald Trump's UN press conference</span></a>
+			</h6>
+			<div class="vertical-middle">
+				<i class="fas fa-headphones"></i>
+				<span>15</span>
+			</div>
+		</div>
+	</div>
+</div> */}
 $(document).ready(function(){
 	var latest_menu = document.getElementsByClassName("latest_menu")[0];
 	var videos = JSON.parse(latest_videos_json);
 	for(var i in videos) {
 		const card_panel = document.createElement("div");
-		card_panel.setAttribute("class", "col-12 col-md-5 col-lg-4 col-xl-3 card-panel");
+		card_panel.setAttribute("class", "col-12 col-md-4 col-xl-3 card-panel");
 		const card_shadow = document.createElement("div");
 		card_shadow.setAttribute("class", "card shadow");
 
