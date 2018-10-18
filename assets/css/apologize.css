@@ -3,7 +3,8 @@ html, body {
     margin:0;
   }
 
-.main-content{
+.main-apologize{
+    margin-top: 5rem;
 	background-color: #e9ecef;
 	height: 100%;
 }

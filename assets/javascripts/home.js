@@ -26,7 +26,7 @@ $(document).ready(function(){
   var videos = JSON.parse(latest_videos_json);
   for(var i in videos) {
     const card_panel = document.createElement("div");
-    card_panel.setAttribute("class", "col-12 col-md-4 col-xl-3 card-panel");
+    card_panel.setAttribute("class", "col-12 col-md-6 col-lg-4 col-xl-3 card-panel");
     const card_shadow = document.createElement("div");
     card_shadow.setAttribute("class", "card shadow");
 
