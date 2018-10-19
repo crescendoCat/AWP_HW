@@ -22,13 +22,14 @@
     <!-- our own css and js file -->
 	<link rel="stylesheet" type="text/css" href="assets/css/home.css"/>    
     
+    
     <title>OurTube</title>
   </head>
   <body class="bg-light">
 <!-- Navbar -->
 	<div class="container-fluid">
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top navbar-fixed-top">
-	  <a class="navbar-brand" href="index.html"><h1>OurTube</h1></a>
+	  <a class="navbar-brand" href="index.php"><h1>OurTube</h1></a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	  </button>
@@ -109,15 +110,105 @@
 	</nav>
 </div>
 <!-- End of Navbar -->
+<?php
+include('database.php');
 
+
+function card($title, $thumbnail) {
+return
+"
+<div class=\"col-12 col-md-6 col-lg-4 col-xl-3 card-panel\">
+  <div class=\"card shadow\">
+    <a href=\"apologize.html\" class=\"image-href mx-auto\">
+      <img class=\"card-img-top thumbnail\" src=\"assets/images/".$thumbnail."\" alt=\"Card image cap\"/>
+    </a>
+    <div class=\"card-body thumbnail-intro\">
+      <h6 class=\"thumbnail-title title-popover\" data-toggle=\"popover\" data-trigger=\"hover\" data-placement=\"top\" 
+          data-content=\"".$title."\">
+        <a href=\"#\"><span>".$title."</span></a>
+      </h6>
+      <div class=\"vertical-middle\">
+        <i class=\"fas fa-headphones\"></i>
+        <span>15</span>
+      </div>
+    </div>
+  </div>
+</div>
+";
+}
+$conn = mysqli_connect('localhost', 'awpuser', 'awpuser');
+$size = 2;
+$total = 20;
+if(isset($_GET['page'])) {
+    $page = $_GET['page'];
+} else {
+    $page = 1;
+}
+
+function echoCards($conn, $page, $size) {
+
+    $result = json_decode(getVideoList($conn, $page-1, $size), true);
+    $i = 0;
+    while($result[$i]['title']) {
+        echo card($result[$i]['title'], $result[$i]['thumbnail_link']);
+        $i++;
+    }
+}
+
+function echoPagination($total, $page, $size, $itemnum) {
+    $prev = '';
+    $next = '';
+    if($page == 1) {
+        $prev = 'disabled';
+    }
+    if($page == $total) {
+        $next = 'disabled';
+    }
+    $prevpage = $page-1;
+    $nextpage = $page+1;
+    
+    if($itemnum >= $total) {
+        $itemnum = $total;
+        $start = 1;
+    } else {
+        $start = $page - floor($itemnum / 2);
+        if($start < 1) {
+            $start = 1;
+        }
+        if($start + $itemnum >= $total) {
+            $start = $total - $itemnum + 1;
+        }
+    }
+    echo
+'
+<nav class="col-12" aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    <li class="page-item '.$prev.'"><a class="page-link" href="index.php?page='.$prevpage.'">Previous</a></li>
+';
+    for($i=$start; $i < $start+$itemnum; $i++) {
+        $activate = '';
+        if($i == $page) {
+            $activate = 'active';
+        }
+        echo 
+        '<li class="page-item '.$activate.'"><a class="page-link" href="index.php?page='.$i.'">'.$i.'</a></li>';
+    }
+    echo
+'
+    <li class="page-item '.$next.'"><a class="page-link" href="index.php?page='.$nextpage.'">Next</a></li>
+  </ul>
+</nav>
+';
+}
+?>
 <!-- The main content -->
 	<!-- This container contains all the items -->
 	<div class="container main-content">
 	<!-- Within the main container, I use one row item to implement RWD -->
 		<div class="row">
 		  <div class="col-12">
-		    <div class="d-lg-block d-none">
-			  <img src="./assets/images/hero_ad_banner.png" alt="banner_ad" class="img-center">
+		    <div class=" d-none d-lg-block">
+			  <img src="assets/images/hero_ad_banner.png" alt="banner_ad" class="img-center">
 		    </div>
 		  </div>
 		</div>
@@ -130,7 +221,12 @@
 				</div>
 				<!-- Latest video menu will be insert into below ('.latest_menu') -->
 				<!-- Videos here. Using "col-lg-4" class to keep the spaces and using "col-12" class to convert the three-column style to one-column style -->
-				<div class="row latest_menu"></div>
+                <div class="row">
+				<?php echoCards($conn, $page, $size); ?>
+                </div>
+                <div class="row mt-5">
+                <?php echoPagination($total, $page, $size, 8); ?>
+                </div>
 		  </div>
 		  <!-- The sidebar part, using "col-12" to move the whole part under the main content(videos) when reading on small devices. The contents inside use the Bootstrap card component -->
 		  <div class="col-12 col-md-4 col-lg-3">
