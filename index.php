@@ -114,13 +114,13 @@
 include('database.php');
 
 
-function card($title, $thumbnail) {
+function card($title, $thumbnail, $youtubeid) {
 return
 "
 <div class=\"col-12 col-md-6 col-lg-4 col-xl-3 card-panel\">
   <div class=\"card shadow\">
-    <a href=\"apologize.html\" class=\"image-href mx-auto\">
-      <img class=\"card-img-top thumbnail\" src=\"assets/images/".$thumbnail."\" alt=\"Card image cap\"/>
+    <a href=\"caption.php?youtubeid=".$youtubeid."\" class=\"image-href mx-auto\">
+      <img class=\"card-img-top thumbnail\" src=\"".$thumbnail."\" alt=\"Card image cap\"/>
     </a>
     <div class=\"card-body thumbnail-intro\">
       <h6 class=\"thumbnail-title title-popover\" data-toggle=\"popover\" data-trigger=\"hover\" data-placement=\"top\" 
@@ -136,9 +136,12 @@ return
 </div>
 ";
 }
-$conn = mysqli_connect('localhost', 'awpuser', 'awpuser');
-$size = 2;
-$total = 20;
+$conn = mysqli_connect('40.121.221.31', 'nthuuser', '1qaz@WSX3edc');
+$size = 12;
+$total_page = ceil(getVideoCount($conn) / $size);
+if($total_page == -1) {
+    $total_page = 20;
+}
 if(isset($_GET['page'])) {
     $page = $_GET['page'];
 } else {
@@ -148,43 +151,51 @@ if(isset($_GET['page'])) {
 function echoCards($conn, $page, $size) {
 
     $result = json_decode(getVideoList($conn, $page-1, $size), true);
+    echo print_r($result);
     $i = 0;
     while($result[$i]['title']) {
-        echo card($result[$i]['title'], $result[$i]['thumbnail_link']);
+        echo card($result[$i]['title'], $result[$i]['thumbnail_link'], $result[$i]['videoID']);
         $i++;
     }
 }
 
-function echoPagination($total, $page, $size, $itemnum) {
+function echoPagination($total_page, $page, $size, $itemnum) {
     $prev = '';
     $next = '';
     if($page == 1) {
         $prev = 'disabled';
     }
-    if($page == $total) {
+    if($page == $total_page) {
         $next = 'disabled';
     }
     $prevpage = $page-1;
     $nextpage = $page+1;
     
-    if($itemnum >= $total) {
-        $itemnum = $total;
+    if($itemnum >= $total_page) {
+        $itemnum = $total_page;
         $start = 1;
     } else {
         $start = $page - floor($itemnum / 2);
         if($start < 1) {
             $start = 1;
         }
-        if($start + $itemnum >= $total) {
-            $start = $total - $itemnum + 1;
+        if($start + $itemnum >= $total_page) {
+            $start = $total_page - $itemnum + 1;
         }
     }
+    //echo 'start:'.$start.', page:'.$page.', $itemnum:'.$itemnum;
     echo
 '
 <nav class="col-12" aria-label="Page navigation">
   <ul class="pagination justify-content-center">
     <li class="page-item '.$prev.'"><a class="page-link" href="index.php?page='.$prevpage.'">Previous</a></li>
 ';
+    if($start >= 5) {
+        echo
+        '<li class="page-item"><a class="page-link" href="index.php?page=1">1</a></li>'.
+        '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+        
+    }
     for($i=$start; $i < $start+$itemnum; $i++) {
         $activate = '';
         if($i == $page) {
@@ -193,6 +204,13 @@ function echoPagination($total, $page, $size, $itemnum) {
         echo 
         '<li class="page-item '.$activate.'"><a class="page-link" href="index.php?page='.$i.'">'.$i.'</a></li>';
     }
+    if($start + $itemnum + 5 < $total_page) {
+        echo
+        '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>'.
+        '<li class="page-item"><a class="page-link" href="index.php?page='.$total_page.'">'.$total_page.'</a></li>';
+        
+    }
+    
     echo
 '
     <li class="page-item '.$next.'"><a class="page-link" href="index.php?page='.$nextpage.'">Next</a></li>
@@ -225,7 +243,7 @@ function echoPagination($total, $page, $size, $itemnum) {
 				<?php echoCards($conn, $page, $size); ?>
                 </div>
                 <div class="row mt-5">
-                <?php echoPagination($total, $page, $size, 8); ?>
+                <?php echoPagination($total_page, $page, $size, 5); ?>
                 </div>
 		  </div>
 		  <!-- The sidebar part, using "col-12" to move the whole part under the main content(videos) when reading on small devices. The contents inside use the Bootstrap card component -->

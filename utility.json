@@ -1,0 +1,15 @@
+{
+"//this is a comment": "define the link of the homepage
+                        using the link in your file to avoid the
+                        possible change of the homepage that makes
+                        whole web site die."
+"//this is a comment": "定義主要頁面的位置，避免更改了位置之後
+                        導致某些頁面無法運作
+                        請在有使用到這些檔案的地方使用這個utility.json"
+  "home_page": "index.php",
+  "video_page": "video.html",
+  "apologize_page": "apologize.html",
+  "caption_json": "caption.php",
+  "video_list_json": "video-list.php",
+  "thumbnail_folder": "Videos/"
+}
