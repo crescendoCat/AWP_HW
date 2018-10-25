@@ -11,17 +11,6 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); // Now added to the DOM
 
-
-$.ajax({
-    type: 'GET',
-    url: 'caption.php?youtubeid=' + getValue("id"),
-    async : false,
-    //dataType: 'json',
-    success: function(msg) {
-      captionContents = JSON.stringify(JSON.parse(msg));
-    },
-})
-
 $.ajax({
     type: 'GET',
     url: 'title.php?youtubeid=' + getValue("id"),
@@ -31,7 +20,20 @@ $.ajax({
       //console.log(msg.slice(0));
       document.title = msg.slice(0) + ' - Ourtube';
     },
+    error:function(xhr){alert("getTitle: " + xhr.status + " " + xhr.statusText);}
 })
+
+$.ajax({
+    type: 'GET',
+    url: 'caption.php?youtubeid=' + getValue("id"),
+    async : false,
+    //dataType: 'json',
+    success: function(msg) {
+      captionContents = JSON.stringify(JSON.parse(msg));
+    },
+    error:function(xhr){alert("getCaption: " + xhr.status + " " + xhr.statusText);}
+})
+
 // 3. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
 var player;
