@@ -35,6 +35,7 @@ function getVideoCount($conn) {
 
 
 function getVideoList($conn, $page, $size) { 
+    global $database_thumbnail_folder_path;
     if($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -65,5 +66,20 @@ function getVideoList($conn, $page, $size) {
     $json_str .= '
 ]';
     return $json_str;
+}
+
+// Receive ajax post request
+if (isset($_POST['request'])) {
+    $conn = connectOurtubeDatabase();
+    
+    if ($conn && $_POST['request'] == "getVideoList") {
+        $total_video_num = getVideoCount($conn);
+        if ($_POST['page']*$_POST['size'] > $total_video_num) {
+            $response = "reachedMax";
+        } else {
+            $response = getVideoList($conn, $_POST['page'], $_POST['size']);
+        }
+    }
+    exit($response);
 }
 ?>
