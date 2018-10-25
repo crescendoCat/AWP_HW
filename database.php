@@ -7,14 +7,27 @@ function connectOurtubeDatabase() {
 }
 
 function getVideoCaption($conn, $youtube_id) {
-    $query = "SELECT Caption FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
+    $query = "SELECT Caption FROM ourtube.video WHERE YoutubeID = '" $youtube_id."'";
     //echo $query;
     $result = $conn->query($query);
     if(!$result) {
         die("Query failed: ". mysqli_error($conn));
     }
-    if($r = $result->fetch_assoc()) {
-        return $r['Caption'];
+    if($row = $result->fetch_assoc()) {
+        return $row['Caption'];
+    } else {
+        return -1;
+    }
+}
+
+function getVideoTitle($conn, $youtube_id) {
+  $query = "SELECT Title FROM ourtube.video WHERE YoutubeID = '" $youtube_id."'";
+  $result = $conn->query($query);
+    if(!$result) {
+        die("Query failed: ". mysqli_error($conn));
+    }
+    if($row = $result->fetch_assoc()) {
+        return $row['Title'];
     } else {
         return -1;
     }
