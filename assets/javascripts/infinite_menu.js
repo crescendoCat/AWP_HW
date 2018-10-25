@@ -30,7 +30,6 @@ function getVideoList(get_page) {
         reachedMax = true;
         return;
       } else {
-        console.log(JSON.parse(response))
         appendLIst(JSON.parse(response));
         loading = false;
       }
