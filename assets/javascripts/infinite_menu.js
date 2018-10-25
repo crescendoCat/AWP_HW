@@ -41,14 +41,14 @@ function appendLIst(video_list) {
   video_list.forEach(function(video) {
     var video_card = `
       <div class="col-12 col-sm-6 col-md-4 col-xl-3 card-panel">
-        <div class="card shadow">
+        <div class="card shadow video-card">
           <a href="video.html" class="image-href mx-auto">
             <img class="card-img-top thumbnail" src="https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q" alt="Card image cap"/>
           </a>
           <div class="card-body thumbnail-intro">
             <h6 class="thumbnail-title title-popover" data-toggle="popover" data-trigger="hover" data-placement="top" 
                 data-content="${video['title']}">
-              <a href="#"><span>${video['title']}</span></a>
+              <a href="#"><span class="thumbnail-title-span">${video['title']}</span></a>
             </h6>
             <div class="vertical-middle">
               <i class="fas fa-headphones"></i>

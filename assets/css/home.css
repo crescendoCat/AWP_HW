@@ -57,6 +57,22 @@ body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 {
   border: 0;
 }
 
+.video-card {
+  height: 15rem;
+  margin-bottom: 15px;
+}
+
+.card-body {
+  padding: 1rem !important;
+}
+
+.thumbnail-title, .thumbnail-title > a, .thumbnail-title-span {
+  font-size: 12px;
+  height: 4.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* general */
 .vertical-middle {
   vertical-align: middle;
