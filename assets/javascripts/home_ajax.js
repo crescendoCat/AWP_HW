@@ -152,7 +152,8 @@ function pagination(page, total_page, page_item_num) {
 
 function createPageitem(string, activate, hrefPage) {
   pageLink = document.createElement('a');
-  pageLink.setAttribute("href", window.location.href.split('?')[0] + "?page=" + hrefPage);
+  pageLink.setAttribute("class", "page-link");
+  pageLink.setAttribute("href", "./index_ajax.html?page=" + hrefPage);
   pageLink.appendChild(document.createTextNode(string));
   pageItem = document.createElement('li');
   pageItem.setAttribute("class", "page-item " + activate);
