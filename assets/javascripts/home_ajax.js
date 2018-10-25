@@ -3,6 +3,7 @@ const apologize_page = "./apologize.html";
 const latest_videos_json = 
 '[{"title": "The strangest moments from Donald Trump\'s UN press conference","thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg","link": "./video.html","view": 15},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683}]';
 
+var pagesize = 8;
 {/* <div class="col-12 col-md-4 col-xl-3 card-panel">
   <div class="card shadow">
     <a href="video.html" class="image-href mx-auto">
@@ -65,16 +66,10 @@ function createCardBody(title, link) {
 
 function ajax_work(page) {
   //console.log(page);
-  var pagesize = 8;
   $.ajax({
-    type: 'POST',
-    url: './database.php',
+    type: 'GET',
+    url: 'video-list.php?page=' + page + '&size=' + pagesize,
     //dataType: 'json',
-    data: {
-    page : page, 
-    size : pagesize,
-    request: "getVideoList"
-    },
     success: function(msg) {
       //console.log(msg);
       ajax_success(msg);
