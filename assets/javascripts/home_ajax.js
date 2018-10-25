@@ -22,7 +22,7 @@ const latest_videos_json =
 </div> */}
 
 $(document).ready(function(){
-  var total_page = 247;
+  var total_page = 246;
   var page = getValue("page");
   var page_item_num = 10;
   //console.log(page);

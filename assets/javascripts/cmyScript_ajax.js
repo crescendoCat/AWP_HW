@@ -14,7 +14,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); // Now added to the
 $.ajax({
     type: 'POST',
     url: './database.php',
-    //dataType: 'json',
+    dataType: 'text',
     data: {
     youtube_id : getValue("id"), 
     request: "getVideoTitle"
