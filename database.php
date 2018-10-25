@@ -1,4 +1,5 @@
 <?php
+$host = 'http://40.121.221.31:8888/';
 $database_thumbnail_folder_path = 'Videos/';
 
 
@@ -48,7 +49,7 @@ function getVideoCount($conn) {
 
 
 function getVideoList($conn, $page, $size) { 
-    global $database_thumbnail_folder_path;
+    global $database_thumbnail_folder_path, $host;
     if($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -63,16 +64,21 @@ function getVideoList($conn, $page, $size) {
         ';
     $first = 1;
     while($row = $result->fetch_assoc()){
-        $thumbnail_link = glob($database_thumbnail_folder_path.$row['VoicetubeID'].'/*.jpg');
-        //echo 'link:'.$thumbnail_link[0];
+        $thumbnail_link = $host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/'.$row['YoutubeID'].'.jpg';
+        // $thumbnail_link = glob($host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/*.jpg');
         if(!$first) {
             $json_str .= ',';
         }
         $json_str .= '{
             "videoID":"'.$row['YoutubeID'].'",
-            "thumbnail_link":"'.$thumbnail_link[0].'",
+            "thumbnail_link":"'.$thumbnail_link.'",
             "title":"'.$row['Title'].'"
         }';
+        // $json_str .= '{
+        //     "videoID":"'.$row['YoutubeID'].'",
+        //     "thumbnail_link":"'.$thumbnail_link[0].'",
+        //     "title":"'.$row['Title'].'"
+        // }';
         $first = 0;
     }
 

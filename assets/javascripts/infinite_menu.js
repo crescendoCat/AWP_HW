@@ -30,6 +30,7 @@ function getVideoList(get_page) {
         reachedMax = true;
         return;
       } else {
+        console.log(response)
         appendLIst(JSON.parse(response));
         loading = false;
       }
@@ -44,16 +45,13 @@ function appendLIst(video_list) {
         "<div class='card shadow video-card'>"+
           "<a href='video.html' class='image-href mx-auto'>"+
             "<img class='card-img-top thumbnail' alt='Card image cap'" + 
-                  "src='https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q'/>"+
+                  "src='" + video['thumbnail_link'] + "'/>"+
+                  // "src='https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q'/>"+
           "</a>"+
           "<div class='card-body thumbnail-intro'>"+
             "<h6 class='thumbnail-title title-popover' data-toggle='popover' data-trigger='hover' data-placement='top' data-content='" + video['title'] + "'>" +
             "<a href='#'><span class='thumbnail-title-span'>" + video['title'] + "</span></a>"+
             "</h6>"+
-            "<div class='vertical-middle'>"+
-              "<i class='fas fa-headphones'></i>"+
-              "<span>15</span>"+
-            "</div>" +
           "</div>"+
         "</div>"+
       "</div>"
