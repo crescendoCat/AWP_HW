@@ -7,7 +7,7 @@ function connectOurtubeDatabase() {
 }
 
 function getVideoCaption($conn, $youtube_id) {
-    $query = "SELECT Caption FROM ourtube.video WHERE YoutubeID = '" $youtube_id."'";
+    $query = "SELECT Caption FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
     //echo $query;
     $result = $conn->query($query);
     if(!$result) {
@@ -21,7 +21,7 @@ function getVideoCaption($conn, $youtube_id) {
 }
 
 function getVideoTitle($conn, $youtube_id) {
-  $query = "SELECT Title FROM ourtube.video WHERE YoutubeID = '" $youtube_id."'";
+  $query = "SELECT Title FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
   $result = $conn->query($query);
     if(!$result) {
         die("Query failed: ". mysqli_error($conn));
