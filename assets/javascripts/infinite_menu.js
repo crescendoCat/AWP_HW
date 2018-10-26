@@ -43,7 +43,7 @@ function appendLIst(video_list) {
     var video_card = 
       "<div class='col-12 col-sm-6 col-md-4 col-xl-3 card-panel'>"+
         "<div class='card shadow video-card'>"+
-          "<a href='video_ajax.html?id=" + video['videoID'] +  "' class='image-href mx-auto'>"+
+          "<a href='video_infinite.html?id=" + video['videoID'] +  "' class='image-href mx-auto'>"+
             "<img class='card-img-top thumbnail' alt='Card image cap'" + 
                   "src='" + video['thumbnail_link'] + "'/>"+
                   // "src='https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q'/>"+
