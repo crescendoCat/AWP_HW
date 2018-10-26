@@ -1,6 +1,5 @@
 <?php
 $host = 'http://40.121.221.31:8888/';
-$database_thumbnail_folder_path = 'Videos/';
 
 
 function connectOurtubeDatabase() {

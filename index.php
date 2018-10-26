@@ -26,100 +26,16 @@
     <title>OurTube</title>
   </head>
   <body class="bg-light">
-<!-- Navbar -->
-	<div class="container-fluid">
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top navbar-fixed-top">
-	  <a class="navbar-brand" href="index.php"><h1>OurTube</h1></a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	  </button>
-
-	  <div class="collapse navbar-collapse" id="navbar">
-		<ul class="navbar-nav">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMainMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			  精選頻道
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdownMainMenu">
-			  <a class="dropdown-item" href="#">中英文雙字幕影片</a>
-			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">深度英文演講</a>
-			  <a class="dropdown-item" href="#">知識型動畫</a>
-			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">看BBC學英文</a>
-			  <a class="dropdown-item" href="#">看CNN學英文</a>
-			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">TOEIC 多益考試</a>
-			  <a class="dropdown-item" href="#">TOFEL 托福考試</a>
-			  <a class="dropdown-item" href="#">IELTS 雅思 <span class="badge badge-danger">NEW</span></a>
-			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">阿滴英文 </a>
-			  <a class="dropdown-item" href="#">主編解析 <span class="badge badge-danger">NEW</span></a>
-			</div>
-		  </li>
-		  <li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLevels" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			  程度分級
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdownLevels">
-			  <div class="dropright" href="#">
-			    <a class="dropdown-item dropdown-toggle" href="#" id="levelsDropdownLevel1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">初級: TOEIC 250-545</a>
-				<div class="dropdown-menu" aria-labelledby="levelsDropdownLevel1">
-				  <a class="dropdown-item" href="#">a</a>
-				</div>
-			  </div>
-			  <div class="dropright" href="#">
-			    <a class="dropdown-item dropdown-toggle" href="#" id="levelsDropdownLevel1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">中級: TOEIC 550-780</a>
-				<div class="dropdown-menu" aria-labelledby="levelsDropdownLevel1">
-				  <a class="dropdown-item" href="#">a</a>
-				</div>
-			  </div>
-			  <div class="dropright" href="#">
-			    <a class="dropdown-item dropdown-toggle" href="#" id="levelsDropdownLevel1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">高級: TOEIC 785-990</a>
-				<div class="dropdown-menu" aria-labelledby="levelsDropdownLevel1">
-				  <a class="dropdown-item" href="#">a</a>
-				</div>
-			  </div>
-			</div>
-		  </li>
-		  <li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			  聽力口說
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-			  <a class="dropdown-item" href="#">每日口說挑戰</a>
-			  <a class="dropdown-item" href="#">聽力測驗</a>
-			</div>
-		  </li>
-		  <li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			  社群
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-			  <a class="dropdown-item" href="#">激勵牆</a>
-			  <a class="dropdown-item" href="#">翻譯社群</a>
-			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">VoiceTube Campus</a>
-			</div>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="#">匯入影片</a>
-		  </li>
-		</ul>
-	  </div>
-	</nav>
-</div>
-<!-- End of Navbar -->
-<?php
+  <?php
 include('database.php');
-
+include('utility.php');
 
 function card($title, $thumbnail, $youtubeid) {
 return
 "
 <div class=\"col-12 col-md-6 col-lg-4 col-xl-3 card-panel\">
   <div class=\"card shadow\">
-    <a href=\"caption.php?youtubeid=".$youtubeid."\" class=\"image-href mx-auto\">
+    <a href=\"video.php?youtubeid=".$youtubeid."\" class=\"image-href mx-auto\">
       <img class=\"card-img-top thumbnail\" src=\"".$thumbnail."\" alt=\"Card image cap\"/>
     </a>
     <div class=\"card-body thumbnail-intro\">
@@ -151,74 +67,18 @@ if(isset($_GET['page'])) {
 function echoCards($conn, $page, $size) {
 
     $result = json_decode(getVideoList($conn, $page-1, $size), true);
-    echo print_r($result);
+    //echo print_r($result);
     $i = 0;
     while($result[$i]['title']) {
         echo card($result[$i]['title'], $result[$i]['thumbnail_link'], $result[$i]['videoID']);
         $i++;
     }
 }
-
-function echoPagination($total_page, $page, $size, $itemnum) {
-    $prev = '';
-    $next = '';
-    if($page == 1) {
-        $prev = 'disabled';
-    }
-    if($page == $total_page) {
-        $next = 'disabled';
-    }
-    $prevpage = $page-1;
-    $nextpage = $page+1;
-    
-    if($itemnum >= $total_page) {
-        $itemnum = $total_page;
-        $start = 1;
-    } else {
-        $start = $page - floor($itemnum / 2);
-        if($start < 1) {
-            $start = 1;
-        }
-        if($start + $itemnum >= $total_page) {
-            $start = $total_page - $itemnum + 1;
-        }
-    }
-    //echo 'start:'.$start.', page:'.$page.', $itemnum:'.$itemnum;
-    echo
-'
-<nav class="col-12" aria-label="Page navigation">
-  <ul class="pagination justify-content-center">
-    <li class="page-item '.$prev.'"><a class="page-link" href="index.php?page='.$prevpage.'">Previous</a></li>
-';
-    if($start >= 5) {
-        echo
-        '<li class="page-item"><a class="page-link" href="index.php?page=1">1</a></li>'.
-        '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
-        
-    }
-    for($i=$start; $i < $start+$itemnum; $i++) {
-        $activate = '';
-        if($i == $page) {
-            $activate = 'active';
-        }
-        echo 
-        '<li class="page-item '.$activate.'"><a class="page-link" href="index.php?page='.$i.'">'.$i.'</a></li>';
-    }
-    if($start + $itemnum + 5 < $total_page) {
-        echo
-        '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>'.
-        '<li class="page-item"><a class="page-link" href="index.php?page='.$total_page.'">'.$total_page.'</a></li>';
-        
-    }
-    
-    echo
-'
-    <li class="page-item '.$next.'"><a class="page-link" href="index.php?page='.$nextpage.'">Next</a></li>
-  </ul>
-</nav>
-';
-}
 ?>
+<!-- Navbar -->
+<? echoNavbar() ?>
+<!-- End of Navbar -->
+
 <!-- The main content -->
 	<!-- This container contains all the items -->
 	<div class="container main-content">
