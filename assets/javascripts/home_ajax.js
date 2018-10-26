@@ -86,7 +86,7 @@ function ajax_success(videos_json) {
     const card_shadow = document.createElement("div");
     card_shadow.setAttribute("class", "card shadow");
     var link_url = './video_ajax.html?id=' + videos[i]["videoID"]
-    const card_thumbnail = createCardThumbnail(videos[i]["thumbnail_img"], link_url);
+    const card_thumbnail = createCardThumbnail(videos[i]["thumbnail_link"], link_url);
     const card_body = createCardBody(videos[i]["title"], link_url);
     card_shadow.appendChild(card_thumbnail);
     card_shadow.appendChild(card_body);
