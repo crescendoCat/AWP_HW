@@ -35,11 +35,9 @@ function getVideoList(get_page) {
       reachedMax: reachedMax
     }).done(function(response) {
       if (response === "reachedMax") {
-        console.log('reachedMax');
         reachedMax = true;
         return;
       } else {
-        console.log(response)
         appendLIst(JSON.parse(response));
         loading = false;
       }
@@ -55,7 +53,6 @@ function appendLIst(video_list) {
           "<a href='video_infinite.html?id=" + video['videoID'] +  "' class='image-href mx-auto'>"+
             "<img class='card-img-top thumbnail' alt='Card image cap'" + 
                   "src='" + video['thumbnail_link'] + "'/>"+
-                  // "src='https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfKTCgpCCE0teFxhMu3XzA_MRO0Q'/>"+
           "</a>"+
           "<div class='card-body thumbnail-intro'>"+
             "<h6 class='thumbnail-title title-popover' data-toggle='popover' data-trigger='hover' data-placement='top' data-content='" + video['title'] + "'>" +
