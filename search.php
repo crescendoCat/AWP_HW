@@ -1,50 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Bootstrap Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	
+	<!-- Bootstrap Required meta tags -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	
 	<!-- Bootstrap latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" 
 		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" 
       integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-      
-      
+	  
+	  
+	<!-- Bootstrap Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="assets/javascripts/jquery-3.3.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    
-    
-    <!-- our own css and js file -->
-	<link rel="stylesheet" type="text/css" href="assets/css/home.css"/>    
-    
-    
-    <title>OurTube</title>
-  </head>
-  <body class="bg-light">
-  <?php
+	
+	
+	<!-- our own css and js file -->
+	<link rel="stylesheet" type="text/css" href="assets/css/home.css"/>
+	<link rel="stylesheet" type="text/css" href="assets/css/cmyStyle.css"/>
+    <script src="assets/javascripts/cmyYoutubeDataApi.js"></script>
+    <script src="assets/javascripts/cmyScript_php.js"></script>
+	
+    <title>The strangest moments from Donald Trump's UN press conference - OurTube</title>
+</head>
+<?php
 include('database.php');
 include('utility.php');
-
-$conn = mysqli_connect('40.121.221.31', 'nthuuser', '1qaz@WSX3edc');
-$size = 12;
-$total_page = ceil(getVideoCount($conn) / $size);
-if($total_page == -1) {
-    $total_page = 20;
+$conn = connectOurtubeDatabase();
+if(isset($_GET['q'])) {
+    $q_origin = $_GET['q'];
+    $q = preg_replace("/ /", "%", $q_origin);
+    $q = '\'%'.$q.'%\'';
+    echo $q;
+} else {
+    $q = '';
 }
+$total_page = 1;
+$size = 12;
 if(isset($_GET['page'])) {
     $page = $_GET['page'];
 } else {
     $page = 1;
 }
-
-function echoCards($conn, $page, $size) {
-
-    $result = json_decode(getVideoList($conn, $page-1, $size), true);
+function echoCards($conn, $q, $page, $size) {
+    global $total_page;
+    $search = getVideoSearchList($conn, $q, $page-1, $size);
+    $result = json_decode($search[0], true);
+    $total_page = ceil($search[1] / $size);
     //echo print_r($result);
     $i = 0;
     while($result[$i]['title']) {
@@ -52,11 +61,11 @@ function echoCards($conn, $page, $size) {
         $i++;
     }
 }
-?>
-<!-- Navbar -->
-<? echoNavbar() ?>
-<!-- End of Navbar -->
 
+?>
+<body>
+<!-- Navbar -->
+<? echoNavbar(); ?>
 <!-- The main content -->
 	<!-- This container contains all the items -->
 	<div class="container main-content">
@@ -73,15 +82,15 @@ function echoCards($conn, $page, $size) {
 		  <div class="col-12 col-md-8 col-lg-9 content ">
 		  <!-- Using another row item to divide title and videos -->
 				<div class="row section-title__latest">
-					<h>每日最新影片</h>
+					<h>搜尋結果：</h>
 				</div>
 				<!-- Latest video menu will be insert into below ('.latest_menu') -->
 				<!-- Videos here. Using "col-lg-4" class to keep the spaces and using "col-12" class to convert the three-column style to one-column style -->
                 <div class="row">
-				<?php echoCards($conn, $page, $size); ?>
+				<?php echoCards($conn, $q, $page, $size); ?>
                 </div>
                 <div class="row mt-5">
-                <?php echoPagination($total_page, $page, $size, 5); ?>
+                <?php echoPagination($total_page, $page, $size, 5, 'q='.$q_origin); ?>
                 </div>
 		  </div>
 		  <!-- The sidebar part, using "col-12" to move the whole part under the main content(videos) when reading on small devices. The contents inside use the Bootstrap card component -->
@@ -108,5 +117,5 @@ function echoCards($conn, $page, $size) {
 		  </div>
 		</div>
 	</div>
-  </body>
+</body>
 </html>

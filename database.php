@@ -1,6 +1,6 @@
 <?php
 $host = 'http://40.121.221.31:8888/';
-
+$database_thumbnail_folder_path = 'Videos/';
 
 function connectOurtubeDatabase() {
     return mysqli_connect('40.121.221.31', 'nthuuser', '1qaz@WSX3edc');
@@ -84,6 +84,57 @@ function getVideoList($conn, $page, $size) {
     $json_str .= '
 ]';
     return $json_str;
+}
+
+function getVideoSearchList($conn, $q, $page, $size) { 
+    global $database_thumbnail_folder_path, $host;
+    if($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    
+    $query = 'SELECT YoutubeID, VoicetubeID, Title FROM ourtube.video WHERE Title LIKE '.$q.' LIMIT '.$page*$size.','.$size;
+    //echo $query;
+    $result = $conn->query($query);
+    
+    if(!$result) {
+        die("Query failed: ". mysqli_error($conn));
+    }
+    $query2 = 'SELECT Count(YoutubeID) as total FROM ourtube.video WHERE Title LIKE '.$q;
+
+    $total_result = $conn->query($query2);
+    
+    if(!$total_result) {
+        die("Query failed: ". mysqli_error($conn));
+    }
+    $json_str = '[
+        ';
+    $first = 1;
+    while($row = $result->fetch_assoc()){
+        $thumbnail_link = $host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/'.$row['YoutubeID'].'.jpg';
+        // $thumbnail_link = glob($host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/*.jpg');
+        if(!$first) {
+            $json_str .= ',';
+        }
+        $json_str .= '{
+            "videoID":"'.$row['YoutubeID'].'",
+            "thumbnail_link":"'.$thumbnail_link.'",
+            "title":"'.$row['Title'].'"
+        }';
+        // $json_str .= '{
+        //     "videoID":"'.$row['YoutubeID'].'",
+        //     "thumbnail_link":"'.$thumbnail_link[0].'",
+        //     "title":"'.$row['Title'].'"
+        // }';
+        $first = 0;
+    }
+    
+    if($num = $total_result->fetch_assoc()) {
+        $total_num = $num['total'];
+    }
+    
+    $json_str .= '
+]';
+    return Array($json_str, $total_num);
 }
 
 // Receive ajax post request

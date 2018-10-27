@@ -41,10 +41,11 @@ function getValue(varname)
 }
 
 function onYouTubeIframeAPIReady() {
+    console.log(getValue("youtubeid"));
     player = new YT.Player('player', {
         width: '100%',
         height: '360',
-        videoId: getValue("id"), //blcokchain 101:_160oMzblY8
+        videoId: getValue("youtubeid"), //blcokchain 101:_160oMzblY8
         playerVars: { 'autoplay': 1, 'controls': 1 },
         events: {
             'onReady': onPlayerReady,
@@ -88,7 +89,7 @@ function onPlayerReady(event) {
 
     // http://www.youtube.com/v/WWG6jaBFYtU?version=3
     player.cueVideoByUrl({
-        'mediaContentUrl': 'http://www.youtube.com/v/' + getValue("id") + '?version=3',
+        'mediaContentUrl': 'http://www.youtube.com/v/' + getValue("youtubeid") + '?version=3',
         'startSeconds': 0,
         //'endSeconds': 100,
         'suggestedQuality': 'large'

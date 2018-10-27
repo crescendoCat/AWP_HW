@@ -78,6 +78,7 @@ function ajax_work(page) {
 }
 
 function ajax_success(videos_json) {
+  console.log(videos_json);
   var latest_menu = document.getElementsByClassName("latest_menu")[0];
   var videos = JSON.parse(videos_json);
   for(var i in videos) {
