@@ -73,7 +73,7 @@ if(is_null($json)) {
             }
             $end = $start + $dur;
             $text = $row['text'];
-            $utf8string = html_entity_decode(preg_replace("/u\?([0-9a-fA-F]{4})/", "&#x\\1;", $text), ENT_NOQUOTES, 'UTF-8');
+            $utf8string = html_entity_decode(preg_replace("/u([0-9a-fA-F]{4})/", "&#x\\1;", $text), ENT_NOQUOTES, 'UTF-8');
             echo '
 <tr><td start=\''.$start.'\' end=\''.$end.'\' dur=\''.$dur.'\'>
   <a href="javascript:" onclick="playVideo('.$start.','.$end.');">
