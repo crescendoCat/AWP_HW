@@ -32,7 +32,6 @@
 </head>
 <?php
 include('database.php');
-include('utility.php');
 $conn = connectOurtubeDatabase();
 if(isset($_GET['q'])) {
     $q_origin = $_GET['q'];
@@ -65,7 +64,10 @@ function echoCards($conn, $q, $page, $size) {
 ?>
 <body>
 <!-- Navbar -->
-<? echoNavbar(); ?>
+<?php
+include('utility.php');
+echoNavbar();
+?>
 <!-- The main content -->
 	<!-- This container contains all the items -->
 	<div class="container main-content">

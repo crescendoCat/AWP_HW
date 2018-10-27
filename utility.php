@@ -203,7 +203,7 @@ function card($title, $thumbnail, $youtubeid) {
 return
 "
 <div class=\"col-12 col-md-6 col-lg-4 col-xl-3 card-panel\">
-  <div class=\"card shadow\">
+  <div class=\"card shadow video-card\">
     <a href=\"video.php?youtubeid=".$youtubeid."\" class=\"image-href mx-auto\">
       <img class=\"card-img-top thumbnail\" src=\"".$thumbnail."\" alt=\"Card image cap\"/>
     </a>

@@ -57,7 +57,7 @@ body, button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 {
 }
 
 .video-card {
-  height: 15rem;
+  min-height: 15rem;
   margin-bottom: 15px;
 }
 

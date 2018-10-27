@@ -1,6 +1,6 @@
 var reachedMax = false;
 var page = 0;
-var size = 8;
+var size = 20;
 var loading = false;
 
 $(document).ready(function() {
@@ -9,9 +9,17 @@ $(document).ready(function() {
 
 $(window).scroll(function() {
   var reached70PercentPage = $(window).scrollTop() >= ($(document).height() - $(window).height())*0.7;
-  if (reached70PercentPage) {
+  if (reached70PercentPage && !loading) {
+    
     page ++;
     getVideoList(page);
+  }
+  if($(window).scrollTop() >= $(document).height() - $(window).height()) {
+    //reach_end
+    console.log('reach_page_end');
+    //The user is scrolling so fast!
+    //Adding page size to give user better experience
+    size *= 2;
   }
 });
 
@@ -27,6 +35,7 @@ function getVideoList(get_page) {
       reachedMax: reachedMax
     }).done(function(response) {
       if (response === "reachedMax") {
+        console.log('reachedMax');
         reachedMax = true;
         return;
       } else {
