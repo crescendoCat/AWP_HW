@@ -18,7 +18,11 @@ $.ajax({
     //dataType: 'json',
     success: function(msg) {
       //console.log(msg.slice(0));
-      document.title = msg.slice(0) + ' - Ourtube';
+		var m= msg.replace(/u2019/g, "'");
+		m= m.replace(/\\u2019/g, "'");
+		m= m.replace(/u0027/g, "'");
+		m= m.replace(/\\u2019/g, "'");
+      document.title = m.slice(0) + ' - Ourtube';
     },
     error:function(xhr){alert("getTitle: " + xhr.status + " " + xhr.statusText);}
 })
@@ -29,7 +33,12 @@ $.ajax({
     async : false,
     //dataType: 'json',
     success: function(msg) {
-      captionContents = JSON.stringify(JSON.parse(msg));
+		var m= msg.replace(/u2019/g, "'");
+		m= m.replace(/\\u2019/g, "'");
+		m= m.replace(/u0027/g, "'");
+		m= m.replace(/\\u2019/g, "'");
+		//console.log(m);
+		captionContents = JSON.stringify(JSON.parse(m));
     },
     error:function(xhr){alert("getCaption: " + xhr.status + " " + xhr.statusText);}
 })
