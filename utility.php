@@ -212,10 +212,10 @@ return
           data-content=\"".$title."\">
         <a href=\"#\"><span>".$title."</span></a>
       </h6>
-      <div class=\"vertical-middle\">
+      <!--div class=\"vertical-middle\">
         <i class=\"fas fa-headphones\"></i>
         <span>15</span>
-      </div>
+      </div-->
     </div>
   </div>
 </div>
