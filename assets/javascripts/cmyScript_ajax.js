@@ -18,27 +18,27 @@ $.ajax({
     //dataType: 'json',
     success: function(msg) {
       //console.log(msg.slice(0));
-		var m= msg.replace(/u2019/g, "'");
-		m= m.replace(/\\u2019/g, "'");
-		m= m.replace(/u0027/g, "'");
-		m= m.replace(/\\u2019/g, "'");
-      document.title = m.slice(0) + ' - Ourtube';
+      document.title = msg.slice(0) + ' - Ourtube';
     },
     error:function(xhr){alert("getTitle: " + xhr.status + " " + xhr.statusText);}
 })
-
 $.ajax({
     type: 'GET',
     url: 'caption.php?youtubeid=' + getValue("id"),
     async : false,
     //dataType: 'json',
     success: function(msg) {
-		var m= msg.replace(/u2019/g, "'");
-		m= m.replace(/\\u2019/g, "'");
-		m= m.replace(/u0027/g, "'");
-		m= m.replace(/\\u2019/g, "'");
-		//console.log(m);
-		captionContents = JSON.stringify(JSON.parse(m));
+        console.log(msg.charCodeAt(1185));
+      msg = msg.replace(/[^\\]u([0-9a-fA-F]{4})/g, function(str) {
+        
+        s1 = str.substring(0, 1);
+        s2 = str.substring(1, 6)
+        console.log(s1, s2, str);
+        return s1+"\\"+s2;
+      });
+      msg = msg.replace(/\r|\n|\u0016|\u0010|\u0097/, "");
+      console.log(msg);
+      captionContents = JSON.stringify(JSON.parse(msg));
     },
     error:function(xhr){alert("getCaption: " + xhr.status + " " + xhr.statusText);}
 })

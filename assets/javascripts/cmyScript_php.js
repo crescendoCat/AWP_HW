@@ -24,7 +24,8 @@ function getValue(varname)
   var url = window.location.href;
   var varparts = url.split("?");
   if (varparts.length < 2){return 1;}
-  var vars = varparts[1].split("&amp;");
+  var vars = varparts[1].split("&");
+  //console.log(vars);
   var value = 1;
   for (i=0; i<vars.length; i++)
   {

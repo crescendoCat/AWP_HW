@@ -54,7 +54,7 @@ function echoCards($conn, $page, $size) {
 }
 ?>
 <!-- Navbar -->
-<? echoNavbar() ?>
+<?php echoNavbar() ?>
 <!-- End of Navbar -->
 
 <!-- The main content -->

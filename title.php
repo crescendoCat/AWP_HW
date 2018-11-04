@@ -1,4 +1,4 @@
-<?
+<?php
 include('database.php');
 $conn = connectOurtubeDatabase();
 if(isset($_GET['youtubeid'])) {
