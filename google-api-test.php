@@ -24,11 +24,11 @@ require_once 'utility.php';
 
 date_default_timezone_set('Asia/Taipei');
  
-if (!file_exists(__DIR__ . '/google-api-php-client-2.2.2_PHP54/vendor/autoload.php')) {
+if (!file_exists(__DIR__ . '/assets/libraries/google-api-php-client-2.2.2_PHP54/vendor/autoload.php')) {
   throw new \Exception('please run "composer require google/apiclient:~2.0" in "' . __DIR__ .'"');
 }
 
-require_once __DIR__ . '/google-api-php-client-2.2.2_PHP54/vendor/autoload.php';
+require_once __DIR__ . '/assets/labraries/google-api-php-client-2.2.2_PHP54/vendor/autoload.php';
 session_start();
 
 $htmlBody = <<<END
