@@ -4,7 +4,7 @@ var size = 20;
 var loading = false;
 
 $(document).ready(function() {
-  getVideoList();
+  getVideoList(0); // Modified by min-yi chiu @2018/11/017
 });
 
 $(window).scroll(function() {
