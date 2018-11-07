@@ -4,7 +4,7 @@ var size = 20;
 var loading = false;
 
 $(document).ready(function() {
-  getVideoList(0); // Modified by min-yi chiu @2018/11/017
+  getVideoList(0); // Modified by min-yi chiu @2018/11/17
 });
 
 $(window).scroll(function() {
