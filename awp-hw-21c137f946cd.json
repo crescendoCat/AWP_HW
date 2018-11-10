@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "awp-hw",
+  "private_key_id": "21c137f946cd41bea9856d41cbb91c37bc2dab59",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC4RMyw6gFnysJ2\nLJQQUdnXE3HrJKgEyz7ZDdIkI0/Ktew4TUR5sWNsJaTkPH1AP4rIN6Jj/1IXY0Qd\n/Dp4BXZ1gT5s79oTQJQPOlfwKtsjF2vCtfLs7nrBKEXau25kL6N9E2PRcZm1+bhS\nVkw8Xo7SPC1TxzsDgK2TLA7n9DhbR5f060h4LtifyAve8JrPykaTLzat6q1DAzm1\nc9qGUp/1yntvFtugRsLjUM57GAfBnHmm07ER1UvaXpmpNpOELhTPmGGvFQ7hRCF/\nNDNYzXd1EVvNV8FEm7yh3hzyUFtcn2xLll4epI5sce90BfaPWhqed4DPt8HbYSHy\nb4MIPI/hAgMBAAECggEANdP/OXT6OSAtY0kNbaEDckUfY5HfNRtMPiq/5seb8Pro\nyN+lb6kmgnqSqwuSiRimyWsbGHwGtodMaDf8un/aBWReYINGYJZeSf6AnsteHWej\nlosBLj5SBKfnlAhprIGQECMAZzf4r4SF2COWfJIgxYBHu2/5KMJHsjTOG+snJV6L\nO/ujZnNlyMeW5JTYQ/jQVTm6E0WSrGoPVGxLmFXZTk70ZK9avZPzQ/7dItSeUSws\nXqjoRORy9fcQIw76ZB1upTam4HyLgjTT4Qc3mrN5q/3osc0OojUQLXL4BsSp4hJS\ntJQhpsTJYo2BubmALvnZ2YerAKwKNf1MNkeU+hs86wKBgQDZVH5ewQ5SkZ82ytCQ\n8+ofj2stEsrOmhh7NiCwJzALLAr9xe8tiLilk05RDkIQXl7V6xWbogIFN8Z07eGn\nzm9gC5amNYkF4gpKfvne89KPgUXHcG0BJG2nEs+fKUSYET7Rmsk021ALoidQW/e1\n4FLvFPGoEciC79oNvmsGG2HESwKBgQDZDlhJyQISjyCXx3Xa89Er9IOkBNyK5CUi\n5rIBjv6CJTqeDyjuazpQeXfEZqr8oCZ6jns301fobj4fNR9LBjMqe+aqjPpA+bZR\nizAxIjS92d9f0J8WAqwOemo8o/nsMIRYCFfiwrL5qaHBnFQOQGaui00TUDk4nxYp\nxWurY+3pAwKBgQC4kQo1HE02kBcfqERSJeNZ5CnIAKKdrL5HvSMrlkw14LSA6l0C\nVY9ChoRHUA2I6ywtDdWu83o1xjVTTkaKhUWO0qihBOwWQ+4rcARydK0IVGfXRUI9\naxt4fQA4Egr//f1UctiXe/1Rs+chVsla+2RTSH0mF9wqXtnXPDSV3iE8WwKBgQCP\n8BdUNtwM+qUegcMCA5W+lFOHvUGTSV/nGR0KM41LOOz6TAtUr/7nxuVJdNwG0x0x\nQLMtfhVZqWHAyDWMRvw/PBLnHr4FwJLK2IaIzqozC/w5Sdt1eSgoIb25oPPnUPUy\ne7XsRjjxnzAJeGW1Xbe6H95o5FZN2hGUebrA2W+3iQKBgHmkpGbQKJ6HBdtxzZQu\n3sFC+HqP8Sb5cRHFQ38kRzscecYIWuVTx8MuuY63ouz+xA7hxDoMVXDJgc52Oy8b\nSaiNR8d4rHIktd3/T2DZNFW3Yq82DRkTNqanOzEU29w9s7s55URbZERVT6YuLB2L\nCJPgPfsks4xOfDdvREYiGYIx\n-----END PRIVATE KEY-----\n",
+  "client_email": "yt-caption-download-service@awp-hw.iam.gserviceaccount.com",
+  "client_id": "105932562651295683933",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/yt-caption-download-service%40awp-hw.iam.gserviceaccount.com"
+}
