@@ -47,7 +47,7 @@ function echoCards($conn, $page, $size) {
     $result = json_decode(getVideoList($conn, $page-1, $size), true);
     //echo print_r($result);
     $i = 0;
-    while($result[$i]['title']) {
+    while(isset($result[$i]['title'])) { // add isset() to avoid empty title!
         echo card($result[$i]['title'], $result[$i]['thumbnail_link'], $result[$i]['videoID']);
         $i++;
     }
