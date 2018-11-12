@@ -84,7 +84,7 @@ $htmlBody = <<<END
 END;
 
 // service account secrets
-$KEY_FILE_LOCATION = "./awp-hw-21c137f946cd.json";
+$KEY_FILE_LOCATION = "./awp-hw-c6644f253e84.json";
 
 
 $client = new Google_Client();
@@ -129,7 +129,7 @@ if(isset($_POST['videoLink'])) {
             $captions = listCaptions($youtube, $videoId, $htmlBody);
             $htmlBody .= '<ul>';
             foreach ($captions as $line) {
-                if($line['snippet']['language'] == 'en') {
+                if(preg_match('/^en/', $line['snippet']['language'])) {
                     $englighCaptionId = $line['id'];
                     //echo $englighCaptionId.'</br>';
                 }
