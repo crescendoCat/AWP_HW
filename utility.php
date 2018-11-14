@@ -1,4 +1,11 @@
 <?php
+date_default_timezone_set('Asia/Taipei');
+ 
+if (!file_exists(__DIR__ . '/assets/libraries/google-api-php-client-2.2.2_PHP54/vendor/autoload.php')) {
+  throw new \Exception('please run "composer require google/apiclient:~2.0" in "' . __DIR__ .'"');
+}
+
+require_once __DIR__ . '/assets/libraries/google-api-php-client-2.2.2_PHP54/vendor/autoload.php';
 /* define the link of the homepage
  * using the link in your file to avoid the
  * possible change of the homepage that makes
@@ -248,4 +255,158 @@ return
 </div>
 ";
 }
+function createGoogleClientWithCredentials($redirect, $keyFileLocation) {
+    session_start();
+
+    $client = new Google_Client();
+    $client->setApplicationName("AWP_HW");
+    $client->setAuthConfig($keyFileLocation);
+    $client->setScopes(['https://www.googleapis.com/auth/youtube.force-ssl']);
+    $client->setRedirectUri($redirect);
+    $client->useApplicationDefaultCredentials();
+    // prevent the server stores another token with different scope
+    // use tclit;
+    return $client;
+}
+/**
+ * Downloads a caption track for a YouTube video. (captions.download)
+ *
+ * @param Google_Service_YouTube $youtube YouTube service object.
+ * @param string $captionId The id parameter specifies the caption ID for the resource
+ * that is being downloaded. In a caption resource, the id property specifies the
+ * caption track's ID.
+ * @param $htmlBody - html body.
+ */
+
+function downloadCaption(Google_Service_YouTube $youtube, $captionId, &$htmlBody = null) {
+    // Call the YouTube Data API's captions.download method to download an existing caption.
+    $captionResouce = $youtube->captions->download($captionId, array(
+        'tfmt' => "srt"));
+    $body = $captionResouce->getBody();
+    $contents = $captionResouce->getBody()->getContents();
+    if(isset($htmlBody)) {
+        $code = $captionResouce->getStatusCode(); // 200
+        $reason = $captionResouce->getReasonPhrase(); // OK
+        $htmlBody .= 'code: '. $code. ',reason: '.$reason. '</br>';
+        if ($captionResouce->hasHeader('Content-Length')) {
+        $htmlBody .= "Header: </br>";
+        }
+
+        // Get a header from the response.
+        $htmlBody .= $captionResouce->getHeader('Content-Length'). '</br>';
+
+        // Get all of the response headers.
+        foreach ($captionResouce->getHeaders() as $name => $values) {
+            $htmlBody .= $name . ': ' . implode(', ', $values) . "</br>";
+        }
+        $htmlBody .= sprintf("body: %d, content: %d</br>", !empty($body), !empty($contents));
+    }
+
+    if(!empty($body)) {
+       $caption = srtCaptionParser($body); 
+    } else if(!empty($contents)) {
+       $caption = srtCaptionParser($contents); 
+    }
+    // Implicitly cast the body to a string and echo it
+    return (isset($caption))? srtCaptionJsonHelper($caption) : '';
+}
+
+function srtCaptionJsonHelper($subs) {
+    $json_str = "[";
+    $first = 1;
+    foreach($subs as $sub){
+        //seprate the second part and the millisecond part
+        $start_str = preg_split('/,/', $sub['startTime']);
+        $end_str = preg_split('/,/', $sub['stopTime']);
+        //echo $sub['startTime'].', '.$sub['stopTime']."</br>";
+        $offset = strtotime('00:00:00');
+        $start = strtotime($start_str[0]);
+        $end = strtotime($end_str[0]);
+        
+        $start_float = floatval($start_str[1])/1000;
+        $end_float = floatval($end_str[1])/1000;
+        $dur = (float)($end - $start) + $end_float - $start_float;
+        //echo "$start, $end, $dur</br>";
+        if(!$first) {
+            $json_str .= ',';
+        }
+        $json_str .= sprintf('{
+        "seq": "%d",
+        "start": "%s",
+        "dur": "%s",
+        "text": "%s"
+}',
+        $sub['number'],
+        $start-$offset+$start_float,
+        $dur,
+        $sub['text']);
+        $first = 0;
+    }
+    $json_str .= ']';
+    return $json_str;
+}
+
+function srtCaptionParser($string) {
+$SRT_STATE_SUBNUMBER = 0;
+$SRT_STATE_TIME = 1;
+$SRT_STATE_TEXT = 2;
+$SRT_STATE_END  = 3;
+//file_put_contents('./caption.txt', $string);
+$lines   = preg_split('/\n/', $string);
+$subs    = array();
+$state   = $SRT_STATE_SUBNUMBER;
+$subNum  = 0;
+$subText = '';
+$subTime = '';
+
+foreach($lines as $line) {
+    //echo "{".$line."}\n";
+    switch($state) {
+        case $SRT_STATE_SUBNUMBER:
+            //echo "number: ".$line."\n";
+            $subNum = trim($line);
+            $state  = $SRT_STATE_TIME;
+            break;
+
+        case $SRT_STATE_TIME:
+            //echo "time: ".$line."\n";
+            $subTime = trim($line);
+            $state   = $SRT_STATE_TEXT;
+            break;
+        case $SRT_STATE_END:
+            if (trim($line) == '') {           
+                //echo "end section: ".$line."\n";
+                $sub = array();
+                $sub['number'] = $subNum;
+                list($sub['startTime'], $sub['stopTime']) = explode(' --> ', $subTime);
+                $sub['text']   = $subText;
+                $subText     = '';
+                $state       = $SRT_STATE_SUBNUMBER;
+
+                $subs[]      = $sub;
+                break;
+            } else {
+                // It is still some text here.
+                // Sould'n go into the end state,
+                // pass through to next case;
+            }
+        case $SRT_STATE_TEXT:
+            //echo "text: ".$line."\n";
+            $subText .= $line;
+            $state = $SRT_STATE_END;
+            break;
+
+    }
+}
+
+if ($state == $SRT_STATE_TEXT) {
+    // if file was missing the trailing newlines, we'll be in this
+    // state here.  Append the last read text and add the last sub.
+    $sub['text'] = $subText;
+    $subs[] = $sub;
+}
+//print_r($subs);
+return $subs;
+}
+
 ?>
