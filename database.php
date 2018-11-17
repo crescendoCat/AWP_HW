@@ -1,6 +1,30 @@
 <?php
 $host = 'http://40.121.221.31:8888/';
 $database_thumbnail_folder_path = 'Videos/';
+$apiKey="AIzaSyBPS3aToTVD0SXGNYZpEgAwf43CahHK-58";
+
+class Video{
+	public $videoId;
+	public $title;
+	public $description;
+	public $video_width;
+	public $video_height;
+	public $thumbnail_url;
+	public $thumbnail_width;
+	public $thumbnail_height;
+	public $author_url;
+	public $author_name;
+	public $channelId;
+	// The value is specified in ISO 8601 (YYYY-MM-DDThh:mm:ss.sZ) format.
+	public $publishDate;
+	
+	// param: The value is specified in ISO 8601 (YYYY-MM-DDThh:mm:ss.sZ) format.
+	// Return: standard datetime format in php
+	function convertIso8601toDateTime($iso8601Datetime){
+		 return date('Y-m-d h:i:s', strtotime(substr($iso8601Datetime,0,19)));
+	}	
+}
+
 
 function connectOurtubeDatabase() {
     return mysqli_connect('40.121.221.31', 'nthuuser', '1qaz@WSX3edc');
@@ -136,6 +160,137 @@ function getVideoSearchList($conn, $q, $page, $size) {
 ]';
     return Array($json_str, $total_num);
 }
+
+/**
+ * Simple helper to debug to the console
+ *
+ * @param $data object, array, string $data
+ * @param $context string  Optional a description.
+ *
+ * @return string
+ */
+function debug_to_console( $data, $context = 'Debug in Console' ) {
+
+    // Buffering to solve problems frameworks, like header() in this and not a solid return.
+    ob_start();
+
+    $output  = 'console.info( \'' . $context . ':\' );';
+    $output .= 'console.log(' . json_encode( $data ) . ');';
+    $output  = sprintf( '<script>%s</script>', $output );
+
+    echo $output;
+}
+
+// Database insert. Insert caption info to the Caption table
+function insertVideoCaption(
+	$captionId,	// The caption id from Youtube
+	$videoId,	// The video id from Youtube
+	$sequence,	// The sequence number to the text content 
+	$start,		// The start time of the caption
+	$duration,	// The duration of the caption
+	$content	// The text content of the caption
+){
+	$conn=connectOurtubeDatabase();
+	if($conn->connect_error) {
+		
+        debug_to_console("Connection failed: " . $conn->connect_error);
+		if(!is_null($conn)){
+			mysqli_close($conn);
+		}
+		return;
+    }
+	
+	$sql=sprintf("select * from ourtube.video_caption where videoid='%s' and captionId='%s';"
+	,$videoId,$captionId);
+	$result = $conn->query($sql);
+	
+	if(!$result) {
+		debug_to_console("Query failed: ". mysqli_error($conn));
+		mysqli_close($conn);
+		return; 
+    }
+	
+	$rows=mysqli_num_rows($result);
+	debug_to_console('rows:'.$rows);
+	// Close db connection
+	mysqli_close($conn);
+	
+	$mysqli=new mysqli("40.121.221.31", "nthuuser", "1qaz@WSX3edc","ourtube");	
+	if($mysqli->connect_error){
+		debug_to_console("Connection failed: ".mysqli_error($mysqli));
+		$mysqli->close();
+		return;
+	}
+	
+	// Set autocommit to off
+	//mysqli_autocommit($mysqli,FALSE);
+
+	//$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+
+	
+		$sql= sprintf("Insert ignore into Video_Caption(videoId, captionId) values('%s','%s');",$videoId,$captionId); 
+		$mysqli->query($sql);
+		
+		if($mysqli->query($sql)!==True){
+			debug_to_console("Failed to insert data to Video_Caption!");
+			$mysqli->close();
+			return;
+		}
+		
+		debug_to_console("Succeeded to insert into table video_caption;");
+		
+		$sql=sprintf("insert ignore into Caption(captionId,sequence,start,duration,content)			values('%s',%d,'%s','%s','%s');",$captionId,$sequence,$start,$duration,$content);
+		if($mysqli->query($sql)===True){
+			debug_to_console("Succeeded to insert into table caption;");
+		}else{
+			debug_to_console("Faile to insert into table caption;");
+		}
+	
+		
+	//debug_to_console("sql: ".$sql);	
+	
+	//close the connection;
+	$mysqli->close();		
+}
+
+// Database insert. Insert video info into YoutubeVideo table.
+function insertYoutubeVideio($Video){
+	$mysqli=new mysqli("40.121.221.31", "nthuuser", "1qaz@WSX3edc","ourtube");	
+	if($mysqli->connect_error){
+		debug_to_console("Connection failed: ".$mysqli->connect_error);
+		return;
+	}
+
+	$sql= sprintf("Select * from YoutubeVideo where videoId='%s';",$Video->videoId); 
+	debug_to_console("sql:".$sql);
+	$result=$mysqli->query($sql);
+	if(!$result){
+		debug_to_console("Failed to select the YoutubeVideo!".mysqli_error($mysqli));
+		$mysqli->close();
+		return;
+	}	
+	
+	$rows=mysqli_num_rows($result);
+	debug_to_console("returned rows:".$rows);
+	if($rows==0){
+		$sql= sprintf("insert ignore into YoutubeVideo(videoId,title,description,video_width,video_height,thumbnail_url,thumbnail_width,thumbnail_height,author_url,author_name,channelId,publishDate) values('%s','%s','%s',%d,%d,'%s',%d,%d,'%s','%s','%s','%s');"
+		,$Video->videoId,$Video->title,$Video->description,$Video->video_width,$Video->video_height,$Video->thumbnail_url,$Video->thumbnail_width,$Video->thumbnail_height,$Video->author_url,$Video->author_name,$Video->channelId,$Video->publishDate); 
+		
+		$mysqli->query($sql);
+		if(!$mysqli){
+			debug_to_console("Failed to insert data into YoutubeVideo!");
+			$mysqli->close();
+			return;
+		}else{
+			debug_to_console("Succeeded to insert data into YoutubeVideo!");
+		}
+	}
+	
+	// close the objec
+	$mysqli->close();
+}
+
+// Database Update
 
 // Receive ajax post request
 if (isset($_POST['request'])) {
