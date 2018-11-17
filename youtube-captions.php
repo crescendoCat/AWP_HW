@@ -125,7 +125,7 @@ function getVideoSearchList($conn, $q, $page, $size) {
     }
     $query2 = 'SELECT Count(YoutubeID) as total FROM ourtube.video WHERE Title LIKE '.$q;
 
-    $total_result = $conn->query($query2);
+    $total_result = $conn->query($query2); 
     
     if(!$total_result) {
         die("Query failed: ". mysqli_error($conn));
