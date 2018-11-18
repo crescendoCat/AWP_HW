@@ -311,39 +311,34 @@ function downloadCaption(Google_Service_YouTube $youtube, $captionId, &$htmlBody
     return (isset($caption))? srtCaptionJsonHelper($caption) : '';
 }
 
-function srtCaptionJsonHelper($subs) {
-    $json_str = "[";
-    $first = 1;
-    foreach($subs as $sub){
-        //seprate the second part and the millisecond part
-        $start_str = preg_split('/,/', $sub['startTime']);
-        $end_str = preg_split('/,/', $sub['stopTime']);
-        //echo $sub['startTime'].', '.$sub['stopTime']."</br>";
-        $offset = strtotime('00:00:00');
-        $start = strtotime($start_str[0]);
-        $end = strtotime($end_str[0]);
-        
-        $start_float = floatval($start_str[1])/1000;
-        $end_float = floatval($end_str[1])/1000;
-        $dur = (float)($end - $start) + $end_float - $start_float;
-        //echo "$start, $end, $dur</br>";
-        if(!$first) {
-            $json_str .= ',';
-        }
-        $json_str .= sprintf('{
-        "seq": "%d",
-        "start": "%s",
-        "dur": "%s",
-        "text": "%s"
-}',
-        $sub['number'],
-        $start-$offset+$start_float,
-        $dur,
-        $sub['text']);
-        $first = 0;
-    }
-    $json_str .= ']';
-    return $json_str;
+function srtCaptionJsonHelper($subs_arr) {
+  $new_captions_obj = [];
+  
+  foreach($subs_arr as $sub) {
+    //seprate the second part and the millisecond part
+    $start_str = preg_split('/,/', $sub['startTime']);
+    $end_str = preg_split('/,/', $sub['stopTime']);
+    
+    $offset = strtotime('00:00:00');
+    $start = strtotime($start_str[0]);
+    $end = strtotime($end_str[0]);
+    
+    $start_float = floatval($start_str[1])/1000;
+    $end_float = floatval($end_str[1])/1000;
+    $dur = (float)($end - $start) + $end_float - $start_float;
+
+    $caption_item = [
+      'seq' => $sub['number'],
+      'start' => $start - $offset + $start_float,
+      'end' => $end - $offset + $end_float,
+      'dur' => $dur,
+      'text' => $sub['text']
+    ];
+
+    array_push($new_captions_obj, $caption_item);
+  }
+
+  return json_encode($new_captions_obj);
 }
 
 function srtCaptionParser($string) {

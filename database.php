@@ -27,7 +27,7 @@ class Video{
 
 
 function connectOurtubeDatabase() {
-    return mysqli_connect('40.121.221.31', 'nthuuser', '1qaz@WSX3edc');
+    return new mysqli('40.121.221.31', 'nthuuser', '1qaz@WSX3edc', 'ourtube');
 }
 
 function getVideoCaption($conn, $youtube_id) {
@@ -292,24 +292,23 @@ function insertVideoCaptionPassingArray(
 	//$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
 	
-    $sql= sprintf("Insert ignore into Video_Caption(videoId, captionId) values('%s','%s');",$videoId,$captionId); 
+    $sql= sprintf("Insert ignore into video_caption(videoId, captionId) values('%s','%s');",$videoId,$captionId); 
     $result = $conn->query($sql);
     if($result!==True){
         debug_to_console("Failed to insert data to Video_Caption!");
-        return False;
+        die("Query Failed: ".mysqli_error($conn));
     }
-	foreach($captionArray as $caption) {	
-		
-		debug_to_console("Succeeded to insert into table video_caption;");
-		
-		$sql .=sprintf("insert into Caption(captionId,sequence,start,duration,content)			values('%s',%d,'%s','%s','%s') ON DUPLICATE KEY UPDATE captionId='%s', sequence='%d';",$caption->seq,$caption->start,$caption->dur,$caption->text, $captionId, $caption->seq);
+    $sql = "";
+	foreach($captionArray as $caption) {		
+		$sql .=sprintf("insert into caption(captionId,sequence,start,duration,content) values('%s', %d, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE captionId='%s', sequence='%d';\n",$captionId, $caption->seq,$caption->start,$caption->dur,$caption->text, $captionId, $caption->seq);
     }
+    file_put_contents("sql_log.txt", $sql);
     if($conn->query($sql)===True){
         debug_to_console("Succeeded to insert into table caption;");
-        return True;
+        //die("Query Failed: ".mysqli_error($conn));
     }else{
-        return False;
         debug_to_console("Faile to insert into table caption;");
+        die("Query Failed: ".mysqli_error($conn));
     }
 		
 	//debug_to_console("sql: ".$sql);	
