@@ -97,16 +97,24 @@ function appendVideosToScrollingMenu(videos_json) {
 }
 
 function getVideosCaptions(video_id) {
-  $.post("./youtube-captions.php", { videoID: video_id }, function(captions_res) {
-    // console.log(JSON.parse(captions_res))
-    getTableCaption(captions_res);
-  });
+  var caption_req_url = "/api/caption.php?videoId=" + video_id;
+  $.get(caption_req_url, function(response) {
+    var res = JSON.parse(response);
+    
+    if(res['code']==200) {
+      var caption_arr = res['caption'];
+      getTableCaption(caption_arr);
+      storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
+    } else {
+      var no_caption = [];
+      getTableCaption(no_caption);
+    }
+  })
 }
 
-function getTableCaption(captions_json) {
+function getTableCaption(captions) {
   var captions_tbody = document.getElementById('table_caption').getElementsByTagName('tbody');
 
-  var captions = JSON.parse(captions_json);
   if(captions.length == 0) {
     var no_captions_alert = "<tr><th>This video has no captions!</th></tr>";
 
@@ -126,4 +134,9 @@ function getTableCaption(captions_json) {
     }
 
   }
+}
+
+function storeCaptionArrayIntoDB(caption_id, video_id, caption_arr) {
+  $.post("./api/accessDB.php", 
+        { captionId: caption_id, videoId: video_id, captionArray: caption_arr });
 }
