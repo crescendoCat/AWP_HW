@@ -28,7 +28,7 @@ require_once "../database.php";
  
 //KEY FILE的位置是相對於本檔案的位置
 // $KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json";
-$KEY_FILE_LOCATION = "../awp-hw-c6644f253e84.json";
+$KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json";
 $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'],
 FILTER_SANITIZE_URL);
 
