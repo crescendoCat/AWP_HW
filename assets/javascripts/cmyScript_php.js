@@ -20,10 +20,10 @@ function getValue(varname)
 {
   var url = window.location.href;
   var varparts = url.split("?");
-  if (varparts.length < 2){return 1;}
+  if (varparts.length < 2){return 0;}
   var vars = varparts[1].split("&");
   //console.log(vars);
-  var value = 1;
+  var value = 0;
   for (i=0; i<vars.length; i++)
   {
     var parts = vars[i].split("=");
@@ -93,14 +93,45 @@ function onPlayerReady(event) {
         //'endSeconds': 100,
         'suggestedQuality': 'large'
     });
-
-    // bind the caption
-    //bindCaption();
-
-    //console.log('player: ' + document.getElementById('embed-code').id);
     document.getElementById('embed-code').style.borderColor = '#FF6D00';
     event.target.setVolume(80);
+	
+	 var video_id=getValue("youtubeid");
+	 var caption_req_url = "http://awp-hw-page.tk:8888/api/caption.php?videoId=" + video_id;
+
+   $.get(caption_req_url, function(response) {
+    if(response) {
+      var res = JSON.parse(response);
+
+      if(res['code']==200) {
+        var caption_arr = res['caption'];
+        getTableCaption(caption_arr);
+        storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
+        // set global caption variable as caption_arr
+        caption = caption_arr;
+        
+        // 取得第一段字幕的起訖時間
+        var start = Number(caption[0]['start']);
+        var duration = Number(caption[0]['dur']);
+        var end = start + duration;
+        // 呼叫播放API
+        playVideo(start, end);
+        
+        // set the timer for scrolling to current play time
+        scrollToCaption(0, start, end);
+      } else {
+        var no_caption = [];
+        getTableCaption(no_caption);
+      }
+    } else {
+      var no_caption = [];
+      getTableCaption(no_caption);
+    }
+  });
+	
+	
 }
+
 
 
 function playVideo(startTime, endTime) {
