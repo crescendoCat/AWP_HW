@@ -130,7 +130,7 @@ function echoNavbar() {
 			</div>
 		  </li>
 		  <li class="nav-item">
-		    <a class="nav-link" href="#">匯入影片</a>
+		    <a class="nav-link" href="Input.html">匯入影片</a>
 		  </li>
         </ul>
         <form class="form-inline" action="search.php" method="get">

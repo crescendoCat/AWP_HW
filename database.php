@@ -341,7 +341,7 @@ function insertVideoCaptionPassingArray(
         // $sql .=sprintf("%s('%s', %d, '%s', '%s', '%s')\n", $delim, $captionId, $caption->seq,$caption->start,$caption->dur,$caption->text);
         $sql .=sprintf("%s('%s', %d, '%s', '%s', '%s')\n", $delim, $captionId, $caption['seq'],$caption['start'],$caption['dur'],$caption['text']);
     }
-    file_put_contents("sql_log.txt", $sql);
+    //file_put_contents("sql_log.txt", $sql);
     if($conn->query($sql)===True){
         debug_to_console("Succeeded to insert into table caption;");
         //die("Query Failed: ".mysqli_error($conn));
