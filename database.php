@@ -298,9 +298,16 @@ function insertVideoCaptionPassingArray(
         debug_to_console("Failed to insert data to Video_Caption!");
         die("Query Failed: ".mysqli_error($conn));
     }
-    $sql = "";
+    $sql = "insert ignore into caption(captionId,sequence,start,duration,content) values";
+    $first = True;
 	foreach($captionArray as $caption) {		
-		$sql .=sprintf("insert into caption(captionId,sequence,start,duration,content) values('%s', %d, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE captionId='%s', sequence='%d';\n",$captionId, $caption->seq,$caption->start,$caption->dur,$caption->text, $captionId, $caption->seq);
+        if($first) {
+            $delim = '';
+            $first = False;
+        } else {
+            $delim = ',';
+        }
+        $sql .=sprintf("%s('%s', %d, '%s', '%s', '%s')\n", $delim, $captionId, $caption->seq,$caption->start,$caption->dur,$caption->text);
     }
     file_put_contents("sql_log.txt", $sql);
     if($conn->query($sql)===True){
