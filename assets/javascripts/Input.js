@@ -89,7 +89,10 @@ function storeToSessionAndRedirect(video_json) {
   Session.add('video', parsed_video);
   console.log(Session.get('video'))
 
-  redirect_url = 'http://' + window.location.host + '/video.php?youtubeid=' + parsed_video['videoID'];
+  //redirect_url = 'http://' + window.location.host + '/video.php?youtubeid=' + parsed_video['videoID'];
+  //不用完整網址，這樣瀏覽器會自動選擇導向到此網頁的root底下
+  redirect_url = 'video.php?youtubeid=' + parsed_video['videoID'];
+  
   $(location).attr('href', redirect_url);
 }
 
