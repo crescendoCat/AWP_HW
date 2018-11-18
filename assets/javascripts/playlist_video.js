@@ -97,7 +97,9 @@ function appendVideosToScrollingMenu(videos_json) {
 }
 
 function getVideosCaptions(video_id) {
-  var caption_req_url = "/api/caption.php?videoId=" + video_id;
+
+  var caption_req_url = "api/caption.php?videoId=" + video_id;
+  console.log(caption_req_url);
   $.get(caption_req_url, function(response) {
     var res = JSON.parse(response);
     
@@ -105,11 +107,23 @@ function getVideosCaptions(video_id) {
       var caption_arr = res['caption'];
       getTableCaption(caption_arr);
       storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
+      // set global caption variable as caption_arr
+      caption = caption_arr;
+      
+      // 取得第一段字幕的起訖時間
+      var start = Number(caption[0]['start']);
+      var duration = Number(caption[0]['dur']);
+      var end = start + duration;
+      // 呼叫播放API
+      playVideo(start, end);
+      
+      // set the timer for scrolling to current play time
+      scrollToCaption(0, start, end);
     } else {
       var no_caption = [];
       getTableCaption(no_caption);
     }
-  })
+  });
 }
 
 function getTableCaption(captions) {
