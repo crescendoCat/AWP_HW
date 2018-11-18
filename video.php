@@ -32,6 +32,7 @@ include('database.php');
 	<link rel="stylesheet" type="text/css" href="assets/css/home.css"/>
 	<link rel="stylesheet" type="text/css" href="assets/css/video_page.css"/>
 	<link rel="stylesheet" type="text/css" href="assets/css/cmyStyle.css"/>
+    <script src="assets/libraries/js-session-library.js"></script>
     <script src="assets/javascripts/cmyYoutubeDataApi.js"></script>
     <script src="assets/javascripts/cmyScript_php.js"></script>
     <script src="assets/javascripts/playlist_video.js"></script>

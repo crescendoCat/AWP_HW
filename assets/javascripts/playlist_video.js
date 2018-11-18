@@ -75,7 +75,7 @@ function appendVideosToScrollingMenu(videos_json) {
     var video_card = 
       "<div class='col-12 col-sm-6 col-md-4 col-lg-3'>"+
         "<div class='card card-block'>"+
-          "<a href='video.php?youtubeid=" + video['videoID'] +  "' class='image-href mx-auto'>"+
+          "<a href='video.php?youtubeid=" + video['videoID'] + "&list=" + video['listID'] + "&index=" + video['index'] + "' class='image-href mx-auto'>"+
             "<img class='card-img-top thumbnail' alt='Card image cap'" + 
                   "src='" + video['thumbnail_img'] + "'/>"+
           "</a>"+
