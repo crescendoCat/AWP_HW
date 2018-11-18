@@ -73,10 +73,13 @@ function getVideojson(videoID, listID)
       "https://www.googleapis.com/youtube/v3/playlistItems",
       {part: "snippet", playlistId: listID, key: "AIzaSyBAEWdxVn_cac8vQko7jnDXKXqZOvMez0Y", maxResults: 50},
       function(response){
-        if(response.items.length == 0) alert("No video");
+        //console.log(response)
+        if(response.items.length == 0) alert("The list has no video");
         else putVideo(makeVideojson(response));
       }
-    )
+    ).fail(function() {
+      alert("No list");
+    })
   }
   
 }
