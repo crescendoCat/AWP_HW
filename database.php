@@ -35,7 +35,7 @@ function getVideoCaption($caption_id) {
 	if($mysqli->connect_error){
         debug_to_console("Connection failed: ".$mysqli->connect_error);
         $mysqli->close();
-		return;
+		return null;
     }
     
     $sql=sprintf("select sequence, start, duration, content from caption where captionid='%s' order by sequence ASC;", $caption_id);
@@ -45,7 +45,7 @@ function getVideoCaption($caption_id) {
     if(!$result){
 		debug_to_console("Failed to select captions data from caption table!" . mysqli_error($mysqli));
 		$mysqli->close();
-		return;
+		return null;
 	}
     
     $rows=mysqli_num_rows($result);
@@ -67,6 +67,8 @@ function getVideoCaption($caption_id) {
 
         $mysqli->close();
         return json_encode($captions_data);
+    } else {
+        return null;
     }
 
 }
