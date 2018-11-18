@@ -25,10 +25,10 @@
 if (JSON && JSON.stringify && JSON.parse) var Session = Session || (function() {
  
 	// window object
-	var win = window.top || window;
+  var win = window.top || window;
 	
 	// session store
-	var store = (win.name ? JSON.parse(win.name) : {});
+  var store = (win.name ? JSON.parse(win.name) : {});
 	
 	// save store on page unload
 	function Save() {
