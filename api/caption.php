@@ -50,7 +50,7 @@ if(isset($_GET['videoId'])) {
             $englighCaptionId = $caption_track['id'];
         }
     }
-    $captionId = $englighCaptionId;
+    $captionId = isset($englighCaptionId)? $englishCaptionId : null;
 }
 //檢查有沒有$captionId 如果有表示之前的程式有嘗試取得$captionId
 //利用$captionId確認字幕有沒有在DB，若有 即從DB取字幕
