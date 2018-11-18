@@ -31,16 +31,27 @@ function connectOurtubeDatabase() {
 }
 
 function getVideoCaption($conn, $youtube_id) {
-    $query = "SELECT Caption FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
+    $query = "SELECT captionId FROM ourtube.video_caption WHERE videoId = '".$youtube_id."'";
     //echo $query;
     $result = $conn->query($query);
     if(!$result) {
         die("Query failed: ". mysqli_error($conn));
     }
     if($row = $result->fetch_assoc()) {
-        return $row['Caption'];
+        $caption_id =  $row['captionId'];
     } else {
-        return -1;
+        die("Query failed: ". mysqli_error($conn));
+    }
+    $query = "SELECT sequence, start, duration, content FROM ourtube.caption WHERE captionid = '".$caption_id."'";
+    $result = $conn->query($query);
+    if(!$result) {
+        die("Query failed: ". mysqli_error($conn));
+    }
+    $caption = array();
+    if($row = $result->fetch_assoc()) {
+        $caption[] = array($row['sequence']);
+    } else {
+        die("Query failed: ". mysqli_error($conn));
     }
 }
 
@@ -188,9 +199,9 @@ function insertVideoCaption(
 	$sequence,	// The sequence number to the text content 
 	$start,		// The start time of the caption
 	$duration,	// The duration of the caption
-	$content	// The text content of the caption
+	$content,	// The text content of the caption
+    $conn
 ){
-	$conn=connectOurtubeDatabase();
 	if($conn->connect_error) {
 		
         debug_to_console("Connection failed: " . $conn->connect_error);
@@ -199,7 +210,7 @@ function insertVideoCaption(
 		}
 		return;
     }
-	
+	/*
 	$sql=sprintf("select * from ourtube.video_caption where videoid='%s' and captionId='%s';"
 	,$videoId,$captionId);
 	$result = $conn->query($sql);
@@ -211,16 +222,9 @@ function insertVideoCaption(
     }
 	
 	$rows=mysqli_num_rows($result);
+    */
 	debug_to_console('rows:'.$rows);
 	// Close db connection
-	mysqli_close($conn);
-	
-	$mysqli=new mysqli("40.121.221.31", "nthuuser", "1qaz@WSX3edc","ourtube");	
-	if($mysqli->connect_error){
-		debug_to_console("Connection failed: ".mysqli_error($mysqli));
-		$mysqli->close();
-		return;
-	}
 	
 	// Set autocommit to off
 	//mysqli_autocommit($mysqli,FALSE);
@@ -229,18 +233,18 @@ function insertVideoCaption(
 
 	
 		$sql= sprintf("Insert ignore into Video_Caption(videoId, captionId) values('%s','%s');",$videoId,$captionId); 
-		$mysqli->query($sql);
+		$result = $conn->query($sql);
 		
-		if($mysqli->query($sql)!==True){
+		if($result!==True){
 			debug_to_console("Failed to insert data to Video_Caption!");
-			$mysqli->close();
 			return;
 		}
 		
 		debug_to_console("Succeeded to insert into table video_caption;");
 		
-		$sql=sprintf("insert ignore into Caption(captionId,sequence,start,duration,content)			values('%s',%d,'%s','%s','%s');",$captionId,$sequence,$start,$duration,$content);
-		if($mysqli->query($sql)===True){
+		$sql=sprintf("insert into Caption(captionId,sequence,start,duration,content)			values('%s',%d,'%s','%s','%s') ;",$captionId,$sequence,$start,$duration,$content);
+        $result = $conn->query($sql);
+		if($result===True){
 			debug_to_console("Succeeded to insert into table caption;");
 		}else{
 			debug_to_console("Faile to insert into table caption;");
@@ -249,9 +253,70 @@ function insertVideoCaption(
 		
 	//debug_to_console("sql: ".$sql);	
 	
-	//close the connection;
-	$mysqli->close();		
+	//close the connection;	
 }
+
+function insertVideoCaptionPassingArray(
+    $captionId,
+    $videoId,
+    $captionArray, // should be an array like[]
+    $conn
+){
+	if($conn->connect_error) {
+		
+        debug_to_console("Connection failed: " . $conn->connect_error);
+		if(!is_null($conn)){
+			mysqli_close($conn);
+		}
+		return;
+    }
+	/*
+	$sql=sprintf("select * from ourtube.video_caption where videoid='%s' and captionId='%s';"
+	,$videoId,$captionId);
+	$result = $conn->query($sql);
+	
+	if(!$result) {
+		debug_to_console("Query failed: ". mysqli_error($conn));
+		mysqli_close($conn);
+		return; 
+    }
+	
+	$rows=mysqli_num_rows($result);
+    */
+	debug_to_console('rows:'.$rows);
+	// Close db connection
+	
+	// Set autocommit to off
+	//mysqli_autocommit($mysqli,FALSE);
+
+	//$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+
+	
+    $sql= sprintf("Insert ignore into Video_Caption(videoId, captionId) values('%s','%s');",$videoId,$captionId); 
+    $result = $conn->query($sql);
+    if($result!==True){
+        debug_to_console("Failed to insert data to Video_Caption!");
+        return False;
+    }
+	foreach($captionArray as $caption) {	
+		
+		debug_to_console("Succeeded to insert into table video_caption;");
+		
+		$sql .=sprintf("insert into Caption(captionId,sequence,start,duration,content)			values('%s',%d,'%s','%s','%s') ON DUPLICATE KEY UPDATE captionId='%s', sequence='%d';",$caption->seq,$caption->start,$caption->dur,$caption->text, $captionId, $caption->seq);
+    }
+    if($conn->query($sql)===True){
+        debug_to_console("Succeeded to insert into table caption;");
+        return True;
+    }else{
+        return False;
+        debug_to_console("Faile to insert into table caption;");
+    }
+		
+	//debug_to_console("sql: ".$sql);	
+	
+	//close the connection;	
+}
+
 
 // Database insert. Insert video info into YoutubeVideo table.
 function insertYoutubeVideio($Video){

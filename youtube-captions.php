@@ -2,9 +2,9 @@
 require_once 'utility.php';
 require_once 'database.php';
 
+ini_set("max_execution_time", "300");
 
 date_default_timezone_set('Asia/Taipei');
- 
 if (!file_exists(__DIR__ . '/assets/libraries/google-api-php-client-2.2.2_PHP54/vendor/autoload.php')) {
   throw new Exception('please run "composer require google/apiclient:~2.0" in "' . __DIR__ .'"');
 }
@@ -86,7 +86,7 @@ $htmlBody = <<<END
 END;
 
 // service account secrets
-$KEY_FILE_LOCATION = "awp-hw-c6644f253e84.json"; //awp-hw-21c137f946cd.json
+$KEY_FILE_LOCATION = "../awp-hw-c6644f253e84.json"; //awp-hw-21c137f946cd.json
 
 
 $client = new Google_Client();
@@ -103,6 +103,7 @@ $tokenSessionKey = 'token-' . $client->prepareScopes();
 
 // check if the user sent the data or not
 if(isset($_POST['videoLink'])) {
+    echo 'start<br>';
     // if so, prepareing for the authentication routine
     
     // check if we have the token or not
@@ -121,12 +122,14 @@ if(isset($_POST['videoLink'])) {
 
     // Check to ensure that the access token was successfully acquired.
     if ($client->getAccessToken()) {
+        echo 'authorized<br>';
         $youtube = new Google_Service_Youtube($client);
         $videoLink = isset($_POST['videoLink']) ? $_POST['videoLink'] : null;
         $query = parse_url($videoLink, PHP_URL_QUERY);
         parse_str($query, $queryResult);
         
         $videoId = isset($queryResult['v']) ? $queryResult['v'] : null;
+        $conn = connectOurtubeDatabase();
         try {
             $captions = listCaptions($youtube, $videoId, $htmlBody);
             $htmlBody .= '<ul>';
@@ -140,20 +143,17 @@ if(isset($_POST['videoLink'])) {
                     $line['id'],  $line['snippet']['language']);
             }
             $htmlBody .= '</ul>';
+            echo 'caption listed<br>';
             if(isset($englighCaptionId)) {
                 $responseHeader = '';
                 $_SESSION[$videoId] = downloadCaption($youtube, $englighCaptionId, $responseHeader);
-				
+				echo 'caption downloaded<br>';
 				// convert to json format
-				$jsonContents= json_decode($_SESSION[$videoId]);
+				$jsonContents = json_decode($_SESSION[$videoId]);
 				
 				// iterate the caption collection and call the insertVideoCaption function to insert into tables in db
-				foreach($jsonContents as $cont){
-					// Insert to video_caption and caption tables respectively
-					// input: captionId,videoId,sequence,start,duration,content
-					insertVideoCaption($englighCaptionId,$videoId,$cont->seq,$cont->start,$cont->dur,$cont->text);
-				}
-				
+                $result = insertVideoCaptionPassingArray($englighCaptionId, $videoId, $jsonContents, $conn);
+				$htmlBody .= 'insert success: '. $result . '<br>';
                 if(isset($redirectSsl)) {
                     $protocol = 'https://';
                 } else {
@@ -174,61 +174,7 @@ if(isset($_POST['videoLink'])) {
             } else {
                 $htmlBody .= "<h3>This video does not have an English caption</h3>";
             }
-			
-			$htmlBody.="<ul>";
-			
-			// add the video metadata to the page			
-			// create a new Video class defined in database.php
-			$youtubeVideo= new Video();
-			
-			// use data api 2
-			$url =sprintf("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=%s&format=json"
-			,$videoId);
-			$json_output = file_get_contents($url);
-			$json = json_decode($json_output, true);
-			
-			$youtubeVideo->author_url=$json['author_url'];
-			$youtubeVideo->author_name=$json['author_name'];
-			$youtubeVideo->video_width=$json['width'];
-			$youtubeVideo->video_height=$json['height'];
-			
-			// user data api v3
-			$url =sprintf("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=%s&key=%s"
-			,$videoId,$apiKey);
-			
-			$json = json_decode(file_get_contents($url), true);
-			//print_r($json); // uncomment this if you want to know what is inside!pr
-			
-			$youtubeVideo->publishDate= $youtubeVideo->convertIso8601toDateTime($json['items'][0]['snippet']['publishedAt']);
-			$youtubeVideo->videoId=$json['items'][0]['id'];
-			$youtubeVideo->title=$json['items'][0]['snippet']['title'];
-			$youtubeVideo->channelId=$json['items'][0]['snippet']['channelId'];
-			$youtubeVideo->description=$json['items'][0]['snippet']['description'];
-			$youtubeVideo->thumbnail_url=$json['items'][0]['snippet']['thumbnails']['standard']['url'];
-			$youtubeVideo->thumbnail_width=$json['items'][0]['snippet']['thumbnails']['standard']['width'];
-			$youtubeVideo->thumbnail_height=$json['items'][0]['snippet']['thumbnails']['standard']['height'];
-			
-			$htmlBody.=sprintf("<li>author name: %s</li>",$youtubeVideo->author_name);
-			$htmlBody.=sprintf("<li>author url: %s</li>",$youtubeVideo->author_url);
-			$htmlBody.=sprintf("<li>video width: %s</li>",$youtubeVideo->video_width);
-			$htmlBody.=sprintf("<li>video height: %s</li>",$youtubeVideo->video_height);
-			$htmlBody.=sprintf("<li>publishedAt: %s</li>",$youtubeVideo->publishDate);
-			$htmlBody.=sprintf("<li>video id: https://www.youtube.com/watch?v=%s</li>",$youtubeVideo->videoId);
-			$htmlBody.=sprintf("<li>chennel id: https://www.youtube.com/channel/%s</li>",$youtubeVideo->channelId);
-			$htmlBody.=sprintf("<li>video title: %s</li>",$youtubeVideo->title);
-			$htmlBody.=sprintf("<li>video description: %s</li>",$youtubeVideo->description);
-			$htmlBody.=sprintf("<li>thumbnail url: %s</li>",$youtubeVideo->thumbnail_url);
-			$htmlBody.=sprintf("<li>thumbnail width: %s</li>",$youtubeVideo->thumbnail_width);
-			$htmlBody.=sprintf("<li>thumbnail height: %s</li>",$youtubeVideo->thumbnail_height);
-			$htmlBody.="</ul>";
-			
-			// Save the video meta data to YoutubeVideo table;
-			try{
-				if(!is_null($youtubeVideo) || isset($youtubeVideo->videoId))
-					insertYoutubeVideio($youtubeVideo);
-			}catch(Exception $e){
-				debug_to_console("Error on insertYoutubeVideio(). Message: ".$e->getMessage());
-			}
+			echo 'caption end';
 			
         } catch (Google_Service_Exception $e) {
             $htmlBody .= sprintf('<p>A service error occurred: <code>%s</code></p>',
@@ -239,7 +185,67 @@ if(isset($_POST['videoLink'])) {
         } catch (Google_Exception $e) {
             $htmlBody .= sprintf('<p>An client error occurred: <code>%s</code></p>',
             htmlspecialchars($e->getMessage()));
+        } finally {
+            $conn->close();
         }
+        
+        $htmlBody.="<ul>";
+        
+        // add the video metadata to the page			
+        // create a new Video class defined in database.php
+        $youtubeVideo= new Video();
+
+        // use data api 2
+        $url =sprintf("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=%s&format=json"
+        ,$videoId);
+        $json_output = file_get_contents($url);
+        $json = json_decode($json_output, true);
+
+        $youtubeVideo->author_url=$json['author_url'];
+        $youtubeVideo->author_name=$json['author_name'];
+        $youtubeVideo->video_width=$json['width'];
+        $youtubeVideo->video_height=$json['height'];
+        echo 'data api 2 end';
+        // user data api v3
+        $url =sprintf("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=%s&key=%s"
+        ,$videoId,$apiKey);
+        
+        $json = json_decode(file_get_contents($url), true);
+        //print_r($json); // uncomment this if you want to know what is inside!pr
+        
+        $youtubeVideo->publishDate= $youtubeVideo->convertIso8601toDateTime($json['items'][0]['snippet']['publishedAt']);
+        $youtubeVideo->videoId=$json['items'][0]['id'];
+        $youtubeVideo->title=$json['items'][0]['snippet']['title'];
+        $youtubeVideo->channelId=$json['items'][0]['snippet']['channelId'];
+        $youtubeVideo->description=$json['items'][0]['snippet']['description'];
+        $youtubeVideo->thumbnail_url=$json['items'][0]['snippet']['thumbnails']['standard']['url'];
+        $youtubeVideo->thumbnail_width=$json['items'][0]['snippet']['thumbnails']['standard']['width'];
+        $youtubeVideo->thumbnail_height=$json['items'][0]['snippet']['thumbnails']['standard']['height'];
+        
+        echo 'data api 3 end';
+        
+        $htmlBody.=sprintf("<li>author name: %s</li>",$youtubeVideo->author_name);
+        $htmlBody.=sprintf("<li>author url: %s</li>",$youtubeVideo->author_url);
+        $htmlBody.=sprintf("<li>video width: %s</li>",$youtubeVideo->video_width);
+        $htmlBody.=sprintf("<li>video height: %s</li>",$youtubeVideo->video_height);
+        $htmlBody.=sprintf("<li>publishedAt: %s</li>",$youtubeVideo->publishDate);
+        $htmlBody.=sprintf("<li>video id: https://www.youtube.com/watch?v=%s</li>",$youtubeVideo->videoId);
+        $htmlBody.=sprintf("<li>chennel id: https://www.youtube.com/channel/%s</li>",$youtubeVideo->channelId);
+        $htmlBody.=sprintf("<li>video title: %s</li>",$youtubeVideo->title);
+        $htmlBody.=sprintf("<li>video description: %s</li>",$youtubeVideo->description);
+        $htmlBody.=sprintf("<li>thumbnail url: %s</li>",$youtubeVideo->thumbnail_url);
+        $htmlBody.=sprintf("<li>thumbnail width: %s</li>",$youtubeVideo->thumbnail_width);
+        $htmlBody.=sprintf("<li>thumbnail height: %s</li>",$youtubeVideo->thumbnail_height);
+        $htmlBody.="</ul>";
+        
+        // Save the video meta data to YoutubeVideo table;
+        try{
+            if(!is_null($youtubeVideo) || isset($youtubeVideo->videoId))
+                insertYoutubeVideio($youtubeVideo);
+        }catch(Exception $e){
+            debug_to_console("Error on insertYoutubeVideio(). Message: ".$e->getMessage());
+        }
+        
     }
 }
 
@@ -251,6 +257,7 @@ if(isset($_POST['videoLink'])) {
  * caption tracks for the video specified by the video id.
  * @param $htmlBody - html body.
  */
+
 function listCaptions(Google_Service_YouTube $youtube, $videoId, &$htmlBody) {
   // Call the YouTube Data API's captions.list method to retrieve video caption tracks.
   $captions = $youtube->captions->listCaptions("snippet", $videoId);
@@ -267,6 +274,7 @@ function listCaptions(Google_Service_YouTube $youtube, $videoId, &$htmlBody) {
  * caption track's ID.
  * @param $htmlBody - html body.
  */
+ /*
 function downloadCaption(Google_Service_YouTube $youtube, $captionId, &$htmlBody) {
     // Call the YouTube Data API's captions.download method to download an existing caption.
     $captionResouce = $youtube->captions->download($captionId, array(
@@ -395,6 +403,7 @@ if ($state == $SRT_STATE_TEXT) {
 //print_r($subs);
 return $subs;
 }
+*/
 ?>
 <!doctype html>
 <html>
