@@ -1,5 +1,4 @@
 <?php
-
 require_once "../utility.php";
 require_once "../database.php";
 /* caption.php:
@@ -27,12 +26,12 @@ require_once "../database.php";
  */
  
 //KEY FILE的位置是相對於本檔案的位置
-// $KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json";
-$KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json";
+// $KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json"; // for apach
+$KEY_FILE_LOCATION = "../awp-hw-c6644f253e84.json";       // for windows server 2016
 $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'],
 FILTER_SANITIZE_URL);
-
 //如果傳來的query沒有帶id 把$captionId設為空
+
 $captionId = (isset($_GET['id'])) ? $_GET['id'] : null;
 
 $client = createGoogleClientWithCredentials($redirect, $KEY_FILE_LOCATION);
@@ -44,13 +43,12 @@ if(isset($_GET['videoId'])) {
         $lang_preg = '/^en/';
     }
     $caption_tracks = $youtube->captions->listCaptions("snippet", $_GET['videoId']);
-
     foreach ($caption_tracks as $caption_track) {
         if(preg_match($lang_preg, $caption_track['snippet']['language'])) {
             $englighCaptionId = $caption_track['id'];
         }
     }
-    $captionId = isset($englighCaptionId)? $englishCaptionId : null;
+    $captionId = isset($englighCaptionId)? $englighCaptionId : null;
 }
 //檢查有沒有$captionId 如果有表示之前的程式有嘗試取得$captionId
 //利用$captionId確認字幕有沒有在DB，若有 即從DB取字幕
@@ -75,7 +73,6 @@ if(isset($captionId)) {
             $discription = $e->getMessage();
         }
     }
-
     $caption_obj = [
     'code' => $code,
     'discription' => $discription,
@@ -84,17 +81,12 @@ if(isset($captionId)) {
     ];
     exit(json_encode($caption_obj));
 }
-
 function playlistItemsListByPlaylistId($youtube, $part, $params) {
     $params = array_filter($params);
     $response = $youtube->playlistItems->listPlaylistItems(
         $part,
         $params
     );
-
     return $response;
 }
-
-
-
 ?>
