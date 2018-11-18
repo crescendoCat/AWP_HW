@@ -43,6 +43,7 @@ function createInputzone() {
 }
 
 function buttonClick() {
+  Session.clear();
   const outputzone = document.getElementById("output");
   $("#output").empty();
   var url = fillHttps(document.getElementById("url").value);
@@ -63,7 +64,7 @@ function getVideojson(videoID, listID)
       {part: "snippet", id: videoID, key: "AIzaSyBAEWdxVn_cac8vQko7jnDXKXqZOvMez0Y"},
       function(response){
         if(response.items.length == 0) alert("No video");
-        else putVideo(makeVideojson(response));
+        else storeToSessionAndRedirect(makeVideojson(response));
       }
     )
   }
@@ -74,11 +75,30 @@ function getVideojson(videoID, listID)
       {part: "snippet", playlistId: listID, key: "AIzaSyBAEWdxVn_cac8vQko7jnDXKXqZOvMez0Y", maxResults: 50},
       function(response){
         if(response.items.length == 0) alert("No video");
-        else putVideo(makeVideojson(response));
+        else showMenuAndStoreToSession(makeVideojson(response));
       }
     )
   }
   
+}
+
+function storeToSessionAndRedirect(video_json) {
+  var parsed_video = JSON.parse(video_json)[0];
+  Session.add('video', parsed_video);
+  console.log(Session.get('video'))
+
+  redirect_url = 'http://' + window.location.host + '/video.php?youtubeid=' + parsed_video['videoID'];
+  $(location).attr('href', redirect_url);
+}
+
+function showMenuAndStoreToSession(videos_json) {
+  putVideo(videos_json);
+  storeListItemsToSession(videos_json);
+}
+
+function storeListItemsToSession(videos_json) {
+  var parsed_video = JSON.parse(videos_json);
+  Session.add_items('videos', parsed_video);
 }
 
 function makeVideojson(video)
