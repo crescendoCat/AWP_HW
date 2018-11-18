@@ -1,8 +1,3 @@
-const video_page = "./video.html";
-const apologize_page = "./apologize.html";
-const latest_videos_json = 
-'[{"title": "The strangest moments from Donald Trump\'s UN press conference","thumbnail_img": "https://i.ytimg.com/vi/WWG6jaBFYtU/hqdefault.jpg","link": "./video.html","view": 15},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683},{ "title": "如何不再遲到？給自己與慣性遲到者的建議 (How to Stop Being Late Forever(advice for myself and other chronically late people))","thumbnail_img": "https://cdn.voicetube.com/assets/thumbnails/_pqkpfckjO0_s.jpg","link": "./apologize.html","view": 1683}]';
-
 {/* <div class="col-12 col-md-4 col-xl-3 card-panel">
   <div class="card shadow">
     <a href="video.html" class="image-href mx-auto">
@@ -41,7 +36,7 @@ function createInputzone() {
   textzone.appendChild(inputText);
   inputzone.appendChild(textzone);
   buttonzone.setAttribute("type", "submit");
-  buttonzone.setAttribute("class", "btn btn-default");
+  buttonzone.setAttribute("class", "btn btn-default mb-2");
   buttonzone.setAttribute("onclick", "buttonClick()");
   buttonzone.appendChild(document.createTextNode("submit"));
   inputzone.appendChild(buttonzone);
@@ -89,43 +84,32 @@ function getVideojson(videoID, listID)
 function makeVideojson(video)
 {
   //console.log(video);
-  var result_json = "[";
-  if(video.items.length == 1)
+  var result = [];
+  if(video.items.length == 1) // a single video
   {
-    result_json = result_json +  "{\n" + 
-      "\"videoID\":\"" + video.items[0].id + "\",\n" + 
-      "\"thumbnail_img\":\"" + video.items[0].snippet.thumbnails.default.url + "\",\n" +
-      "\"title\":\"" + video.items[0].snippet.title + "\"\n" +
-      "}";
+    var item = {
+      videoID: video.items[0].id,
+      thumbnail_img: video.items[0].snippet.thumbnails.high.url,
+      title: video.items[0].snippet.title
+    };
+    result.push(item);
   }
-  else
+  else // a playlist of videos
   {
-    for(i = 0; i < video.items.length; i++)
+    for(var i in video.items)
     {
-      if(typeof video.items[i].snippet.thumbnails == "undefined")
-      {
-        result_json = result_json +  "{\n" + 
-          "\"videoID\":\"" + video.items[i].snippet.resourceId.videoId + "\",\n" + 
-          "\"title\":\"" + video.items[i].snippet.title + "\"\n" +
-          "}";
-      }
-      else
-      {
-        result_json = result_json +  "{\n" + 
-          "\"videoID\":\"" + video.items[i].snippet.resourceId.videoId + "\",\n" + 
-          "\"thumbnail_img\":\"" + video.items[i].snippet.thumbnails.default.url + "\",\n" +
-          "\"title\":\"" + video.items[i].snippet.title + "\"\n" +
-          "}";
-      }
-      
-      if(i < video.items.length - 1) result_json += ",";
+      var item = {
+        index: video.items[i].snippet.position,
+        listID: video.items[i].snippet.playlistId,
+        videoID: video.items[i].snippet.resourceId.videoId,
+        thumbnail_img: video.items[i].snippet.thumbnails.high.url || '',
+        title: video.items[i].snippet.title
+      };
+      result.push(item);
     }
   }
-  
-  result_json = result_json + "]";
-  console.log(result_json);
-  return result_json;
-  
+
+  return JSON.stringify(result);
   
 }
 
@@ -138,8 +122,14 @@ function putVideo(videos_json) {
     const card_panel = document.createElement("div");
     card_panel.setAttribute("class", "col-12 col-md-6 col-lg-4 col-xl-3 card-panel");
     const card_shadow = document.createElement("div");
-    card_shadow.setAttribute("class", "card shadow");
-    var link_url = './video_ajax.html?id=' + videos[i]["videoID"]
+    card_shadow.setAttribute("class", "card shadow video-card");
+    
+    if (videos[i]["listID"]) {  // Create a link_url to video page, containing list data
+      var link_url = './video.php?youtubeid=' + videos[i]["videoID"] + '&list=' + videos[i]["listID"] + '&index=' + videos[i]["index"];
+    } else {   // Create a link_url for a single video
+      var link_url = './video.php?youtubeid=' + videos[i]["videoID"];
+    }
+
     const card_thumbnail = createCardThumbnail(videos[i]["thumbnail_img"], link_url);
     const card_body = createCardBody(videos[i]["title"], link_url);
     card_shadow.appendChild(card_thumbnail);
@@ -148,7 +138,7 @@ function putVideo(videos_json) {
 
     menu.appendChild(card_panel);
   }
-  //$('[data-toggle="popover"]').popover();
+  $('[data-toggle="popover"]').popover();
 }
 
 function createCardThumbnail(thumbnail_img, link) {
@@ -177,7 +167,8 @@ function createCardBody(title, link) {
   title_with_link.setAttribute("href", link);
   const title_span = document.createElement("span");
   title_span.innerHTML = title;
-  title_with_popover.appendChild(title_with_link.appendChild(title_span));
+  title_with_link.appendChild(title_span);
+  title_with_popover.appendChild(title_with_link);
 
   card_body.appendChild(title_with_popover);
   return card_body;
