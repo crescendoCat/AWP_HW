@@ -56,10 +56,10 @@ if(isset($_GET['videoId'])) {
 //利用$captionId確認字幕有沒有在DB，若有 即從DB取字幕
 //若DB沒有該字幕，再利用downloadCaption()從YouTube取得真正的Caption
 if(isset($captionId)) {
-    $caption_res_from_db = getVideoCaption($captionId);
+    $caption_res_from_db = json_decode(getVideoCaption($captionId));
 
-    if( count(json_decode($caption_res_from_db)) !== 0 ) {  // Check if captions can be found in DB
-        $caption = $caption_res_from_db;
+    if( count($caption_res_from_db) !== 0 ) {  // Check if captions can be found in DB
+        $caption = json_encode($caption_res_from_db);
         $code = 200;
         $discription = "ok";
     } else {  // If captions don't exist in DB, get them from YouTube API and store into DB
