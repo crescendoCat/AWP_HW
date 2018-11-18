@@ -1,6 +1,6 @@
 $(document).ready(function(){
   // Get the videos scroll menu only if there is list id
-  if (getValue('list')) { 
+  if (getValue('list')==1) { 
     if(Session.get('videos')) {  // Check if videos already in session
       appendVideosToScrollingMenu(Session.get('videos'));
     } else {
@@ -16,7 +16,7 @@ function getVideosListAndShowMenu(listID)
 {
   $.get(
     "https://www.googleapis.com/youtube/v3/playlistItems",
-    { part: "snippet", playlistId: listID, key: "AIzaSyBAEWdxVn_cac8vQko7jnDXKXqZOvMez0Y", maxResults: 50 },
+    { part: "snippet", playlistId: listID, key: "AIzaSyBPS3aToTVD0SXGNYZpEgAwf43CahHK-58", maxResults: 50 },
     function(list_res){
       if(list_res.items.length == 0) return;
       else {
@@ -77,8 +77,9 @@ function appendVideosToScrollingMenu(videos) {
   $('[data-toggle="popover"]').popover();
 }
 
+/*
 function getVideosCaptions(video_id) {
-  var caption_req_url = "api/caption.php?videoId=" + video_id;
+  var caption_req_url = "http://awp-hw-page.tk:8888/api/caption.php?videoId=" + video_id;
 
   $.get(caption_req_url, function(response) {
     if(response) {
@@ -110,7 +111,7 @@ function getVideosCaptions(video_id) {
     }
   });
 }
-
+*/
 function getTableCaption(captions) {
   var captions_tbody = document.getElementById('table_caption').getElementsByTagName('tbody');
 
