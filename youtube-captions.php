@@ -86,7 +86,7 @@ $htmlBody = <<<END
 END;
 
 // service account secrets
-$KEY_FILE_LOCATION = "../awp-hw-c6644f253e84.json"; //awp-hw-21c137f946cd.json
+$KEY_FILE_LOCATION = "awp-hw-c6644f253e84.json"; //awp-hw-21c137f946cd.json
 
 
 $client = new Google_Client();
@@ -102,51 +102,6 @@ $client->setRedirectUri($redirect);
 $tokenSessionKey = 'token-' . $client->prepareScopes();
 
 
-// Receive POST request and return en_captions(json) of a video
-// check if the user sent the data or not
-if(isset($_POST['videoID'])) {
-  // if so, prepareing for the authentication routine
-
-  // check if we have the token or not
-  if (isset($_SESSION[$tokenSessionKey])) {
-    // if we've already acquired the authentication token, 
-    // just use it. 
-    $client->setAccessToken($_SESSION[$tokenSessionKey]);
-  } else {
-    // if we havn't acquired the access token, 
-    // calling Google Api Library to get it.
-    $client->fetchAccessTokenWithAssertion();
-    $_SESSION[$tokenSessionKey] = $client->getAccessToken();
-  }
-
-  // Check to ensure that the access token was successfully acquired.
-  if ($client->getAccessToken()) {
-    $youtube = new Google_Service_Youtube($client);
-    
-    $videoId = $_POST['videoID'];
-    try {
-      $caption_tracks = $youtube->captions->listCaptions("snippet", $videoId);
-
-      foreach ($caption_tracks as $caption_track) {
-        if(preg_match('/^en/', $caption_track['snippet']['language'])) {
-          $englighCaptionId = $caption_track['id'];
-        }
-      }
-      if(isset($englighCaptionId)) {
-        $en_caption = getCaptionsFromYT($youtube, $englighCaptionId);
-        // $_SESSION[$videoId] = $en_caption;
-        exit($en_caption);
-      }
-
-    } catch (Google_Service_Exception $e) {
-      $error_msg = 'A service error occurred. Code: ' . $e->getCode() .'\n'. htmlspecialchars($e->getMessage());
-      exit($error_msg);
-    } catch (Google_Exception $e) {
-      $error_msg = 'An client error occurred. ' . $e->getMessage();
-      exit($error_msg);
-    }
-  }
-}
 // check if the user sent the data or not
 if(isset($_POST['videoLink'])) {
     echo 'start<br>';
@@ -295,56 +250,6 @@ if(isset($_POST['videoLink'])) {
     }
 }
 
-
-
-// Get the captions raw data from YouTube, and transform to the structure we need 
-// Return captions json
-function getCaptionsFromYT(Google_Service_YouTube $youtube, $captionId) {
-  $captionResouce = $youtube->captions->download($captionId, array(
-      'tfmt' => "srt"));
-  $code = $captionResouce->getStatusCode(); // 200
-  $reason = $captionResouce->getReasonPhrase(); // OK
-
-  $captions_rawdata_str = $captionResouce->getBody();
-  $captions_arr = srtCaptionParser($captions_rawdata_str);
-  $captions_json = customizeCaptionsJson($captions_arr);
-  
-  return $captions_json;
-}
-
-// Handle the captions array, transforming to the caption structure we need
-// Return captions json
-function customizeCaptionsJson($subs_arr) {
-  // Take the input structure: [{"number":"1", "startTime":"00:00:00,390", "stopTime":"00:00:02,280", "text":"hello it's kinoshita yuka "}, ...]
-  // To the structure we need: [{"seq":"1", "start":0.39, "end": 2.28, "dur":1.89, "text":"hello it's kinoshita yuka"}, ...]
-  $new_captions_obj = [];
-  
-  foreach($subs_arr as $sub) {
-    //seprate the second part and the millisecond part
-    $start_str = preg_split('/,/', $sub['startTime']);
-    $end_str = preg_split('/,/', $sub['stopTime']);
-    
-    $offset = strtotime('00:00:00');
-    $start = strtotime($start_str[0]);
-    $end = strtotime($end_str[0]);
-    
-    $start_float = floatval($start_str[1])/1000;
-    $end_float = floatval($end_str[1])/1000;
-    $dur = (float)($end - $start) + $end_float - $start_float;
-
-    $caption_item = [
-      'seq' => $sub['number'],
-      'start' => $start - $offset + $start_float,
-      'end' => $end - $offset + $end_float,
-      'dur' => $dur,
-      'text' => $sub['text']
-    ];
-
-    array_push($new_captions_obj, $caption_item);
-  }
-
-  return json_encode($new_captions_obj);
-}
 
 /**
  * Returns a list of caption tracks. (captions.listCaptions)

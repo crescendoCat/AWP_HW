@@ -30,30 +30,61 @@ function connectOurtubeDatabase() {
     return new mysqli('40.121.221.31', 'nthuuser', '1qaz@WSX3edc', 'ourtube');
 }
 
-function getVideoCaption($conn, $youtube_id) {
-    $query = "SELECT captionId FROM ourtube.video_caption WHERE videoId = '".$youtube_id."'";
-    //echo $query;
-    $result = $conn->query($query);
-    if(!$result) {
-        die("Query failed: ". mysqli_error($conn));
+function getVideoCaption($caption_id) {
+    $mysqli = new mysqli("40.121.221.31", "nthuuser", "1qaz@WSX3edc", "ourtube");	
+	if($mysqli->connect_error){
+        debug_to_console("Connection failed: ".$mysqli->connect_error);
+        $mysqli->close();
+		return;
     }
-    if($row = $result->fetch_assoc()) {
-        $caption_id =  $row['captionId'];
-    } else {
-        die("Query failed: ". mysqli_error($conn));
+    
+    $sql=sprintf("select sequence, start, duration, content from caption where captionid='%s' order by sequence ASC;", $caption_id);
+    // debug_to_console("sql:".$sql);
+
+    $result = $mysqli->query($sql);
+    if(!$result){
+		debug_to_console("Failed to select captions data from caption table!" . mysqli_error($mysqli));
+		$mysqli->close();
+		return;
+	}
+    
+    $rows=mysqli_num_rows($result);
+    // debug_to_console("returned rows:".$rows);
+
+    if($rows!==0){
+        $captions_data = [];
+        while($row = $result->fetch_assoc()) {
+            $caption_item = [
+                'seq' => $row['sequence'],
+                'start' => $row['start'],
+                'end' => $row['start'] + $row['duration'],
+                'dur' => $row['duration'],
+                'text' => $row['content']
+            ];
+
+            array_push($captions_data, $caption_item);    
+        }
+
+        $mysqli->close();
+        return json_encode($captions_data);
     }
-    $query = "SELECT sequence, start, duration, content FROM ourtube.caption WHERE captionid = '".$caption_id."'";
-    $result = $conn->query($query);
-    if(!$result) {
-        die("Query failed: ". mysqli_error($conn));
-    }
-    $caption = array();
-    if($row = $result->fetch_assoc()) {
-        $caption[] = array($row['sequence']);
-    } else {
-        die("Query failed: ". mysqli_error($conn));
-    }
+
 }
+
+// Previous one: get captions of the videos both exists in YouTube & VoiceTube
+// function getVideoCaption($conn, $youtube_id) {
+//     $query = "SELECT Caption FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
+//     //echo $query;
+//     $result = $conn->query($query);
+//     if(!$result) {
+//         die("Query failed: ". mysqli_error($conn));
+//     }
+//     if($row = $result->fetch_assoc()) {
+//         return $row['Caption'];
+//     } else {
+//         return -1;
+//     }
+// }
 
 function getVideoTitle($conn, $youtube_id) {
   $query = "SELECT Title FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
@@ -259,9 +290,9 @@ function insertVideoCaption(
 function insertVideoCaptionPassingArray(
     $captionId,
     $videoId,
-    $captionArray, // should be an array like[]
-    $conn
+    $captionArray // should be an array like[]
 ){
+    $conn = connectOurtubeDatabase();
 	if($conn->connect_error) {
 		
         debug_to_console("Connection failed: " . $conn->connect_error);
@@ -283,7 +314,7 @@ function insertVideoCaptionPassingArray(
 	
 	$rows=mysqli_num_rows($result);
     */
-	debug_to_console('rows:'.$rows);
+	// debug_to_console('rows:'.$rows);
 	// Close db connection
 	
 	// Set autocommit to off
@@ -307,7 +338,8 @@ function insertVideoCaptionPassingArray(
         } else {
             $delim = ',';
         }
-        $sql .=sprintf("%s('%s', %d, '%s', '%s', '%s')\n", $delim, $captionId, $caption->seq,$caption->start,$caption->dur,$caption->text);
+        // $sql .=sprintf("%s('%s', %d, '%s', '%s', '%s')\n", $delim, $captionId, $caption->seq,$caption->start,$caption->dur,$caption->text);
+        $sql .=sprintf("%s('%s', %d, '%s', '%s', '%s')\n", $delim, $captionId, $caption['seq'],$caption['start'],$caption['dur'],$caption['text']);
     }
     file_put_contents("sql_log.txt", $sql);
     if($conn->query($sql)===True){
