@@ -97,7 +97,7 @@ function onPlayerReady(event) {
     event.target.setVolume(80);
 	
 	 var video_id=getValue("youtubeid");
-	 var caption_req_url = "http://awp-hw-page.tk:8888/api/caption.php?videoId=" + video_id;
+	 var caption_req_url = "api/caption.php?videoId=" + video_id;
 
    $.get(caption_req_url, function(response) {
     if(response) {

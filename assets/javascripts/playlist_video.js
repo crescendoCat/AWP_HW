@@ -1,6 +1,6 @@
 $(document).ready(function(){
   // Get the videos scroll menu only if there is list id
-  if (getValue('list')==1) { 
+  if (getValue('list')!==0) { 
     if(Session.get('videos')) {  // Check if videos already in session
       appendVideosToScrollingMenu(Session.get('videos'));
     } else {
@@ -8,7 +8,7 @@ $(document).ready(function(){
     } 
   }
 
-  getVideosCaptions(getValue('youtubeid'));
+  // getVideosCaptions(getValue('youtubeid'));
 });
 
 
