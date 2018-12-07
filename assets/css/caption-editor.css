@@ -1,0 +1,49 @@
+.editor-line-text{
+	border: none; 
+	width:  100%; /*fill parent*/
+	height: 100%; 
+	resize: none; /*prevent resize*/
+}
+.editor-line-body{
+	height: 6.5rem;
+	padding: .75rem;
+}
+.editor-line-body:hover{
+	background-color: #f0f0ff;
+}
+
+.editor-line-body:hover .editor-line-text{
+	background-color: #f0f0ff;
+}
+.editor-line-body:hover .editor-time-input{
+	background-color: #f0f0ff;
+}
+.editor-line-body:hover .editor-time-input:focus{
+	background-color: #ffffff;
+}
+.editor-line-body:hover .editor-line-text:focus{
+	background-color: #ffffff;
+}
+
+.editor-timestamp-container{
+	padding: 0rem;
+}
+
+.editor-line-time-span{
+	width: 100%;
+}
+.editor-time-input{
+	border: none;
+	width: 100%;
+}
+
+.editor-line-body-highlight {
+	border-left: solid 2px #cc181e;
+}
+#text-line {
+	min-height: 2rem;
+	background-color: black;
+	color: white;
+	text-align: center;
+	margin-top: -.5rem;
+}

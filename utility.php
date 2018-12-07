@@ -26,7 +26,7 @@ $database_thumbnail_folder_path = 'Videos/';
  */
 
 function echoBootstrapAndJqueryDependencies() {
-    echo '
+    echo <<<END
     <!-- Bootstrap Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -40,9 +40,10 @@ function echoBootstrapAndJqueryDependencies() {
       
       
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>';
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+END;
 
 }
 
@@ -278,12 +279,14 @@ function createGoogleClientWithCredentials($redirect, $keyFileLocation) {
  * @param $htmlBody - html body.
  */
 
-function downloadCaption(Google_Service_YouTube $youtube, $captionId, &$htmlBody = null) {
+function downloadCaption(Google_Service_YouTube $youtube, $captionId, &$htmlBody = null, $asSrt=false) {
     // Call the YouTube Data API's captions.download method to download an existing caption.
     $captionResouce = $youtube->captions->download($captionId, array(
         'tfmt' => "srt"));
     $body = $captionResouce->getBody();
     $contents = $captionResouce->getBody()->getContents();
+    //echo $body;
+    //file_put_contents('./caption2.txt', $body);
     if(isset($htmlBody)) {
         $code = $captionResouce->getStatusCode(); // 200
         $reason = $captionResouce->getReasonPhrase(); // OK
@@ -303,15 +306,22 @@ function downloadCaption(Google_Service_YouTube $youtube, $captionId, &$htmlBody
     }
 
     if(!empty($body)) {
-       $caption = srtCaptionParser($body); 
+        $srt = $body;
     } else if(!empty($contents)) {
-       $caption = srtCaptionParser($contents); 
+        $srt = $contents;
+    }
+    if(isset($srt)) {
+        $caption = srtCaptionParser($body);
     }
     // Implicitly cast the body to a string and echo it
-    return (isset($caption))? srtCaptionJsonHelper($caption) : '';
+    if($asSrt) {
+        return (isset($caption))? $srt : '';
+    } else {
+        return (isset($caption))? srtCaptionJsonHelper($caption) : '';
+    }
 }
 
-function srtCaptionJsonHelper($subs_arr) {
+function srtCaptionJsonHelper($subs_arr, $to_json=true) {
   $new_captions_obj = [];
   
   foreach($subs_arr as $sub) {
@@ -338,7 +348,7 @@ function srtCaptionJsonHelper($subs_arr) {
     array_push($new_captions_obj, $caption_item);
   }
 
-  return json_encode($new_captions_obj);
+  return ($to_json)? json_encode($new_captions_obj) : $new_captions_obj;
 }
 
 function srtCaptionParser($string) {

@@ -38,7 +38,7 @@ function getVideoCaption($caption_id) {
 		return null;
     }
     
-    $sql=sprintf("select sequence, start, duration, content from caption where captionid='%s' order by sequence ASC;", $caption_id);
+    $sql=sprintf("select sequence, start, duration, content from caption where captionid='%s' order by cast(start as DECIMAL(10,2)) ASC;", $caption_id);
     // debug_to_console("sql:".$sql);
 
     $result = $mysqli->query($sql);
@@ -289,6 +289,27 @@ function insertVideoCaption(
 	//close the connection;	
 }
 
+// insert a caption into a video
+function insertSingleVideoCaption($captionId, $sequence, $start, $duration, $content, $conn) {
+    $sql=sprintf("REPLACE INTO Caption(captionId,sequence,start,duration,content) values('%s',%d,'%s','%s','%s') ;",$captionId,$sequence,$start,$duration,$content);
+    $result = $conn->query($sql);
+    return $result;
+}
+
+
+// delete the specific caption from a video
+function deleteSingleVideoCaption($captionId, $sequence, $conn) {
+    $sql=sprintf("DELETE FROM Caption WHERE captionId='%s' and sequence='%s';",$captionId,$sequence);
+    return $conn->query($sql);
+}
+
+// delete all the caption of the video
+function deleteVideoCaption($captionId, $conn) {
+    $sql=sprintf("DELETE FROM Caption WHERE captionId='%s';",$captionId);
+    return $conn->query($sql);
+}
+
+
 function insertVideoCaptionPassingArray(
     $captionId,
     $videoId,
@@ -345,6 +366,7 @@ function insertVideoCaptionPassingArray(
     }
     //file_put_contents("sql_log.txt", $sql);
     if($conn->query($sql)===True){
+        return true;
         debug_to_console("Succeeded to insert into table caption;");
         //die("Query Failed: ".mysqli_error($conn));
     }else{

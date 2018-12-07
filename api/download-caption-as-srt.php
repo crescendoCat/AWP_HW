@@ -24,9 +24,6 @@ require_once "../database.php";
  * discription是code的描述，例如code 200的描述是ok。
  * caption是字幕欄位，裡面的內容就是video頁面需要的所有內容
  */
- 
-//KEY FILE的位置是相對於本檔案的位置
-// $KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json"; // for apach
 $KEY_FILE_LOCATION = "../../awp-hw-c6644f253e84.json";       // for windows server 2016
 $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'],
 FILTER_SANITIZE_URL);
@@ -54,14 +51,13 @@ if(isset($_GET['videoId'])) {
 //利用$captionId確認字幕有沒有在DB，若有 即從DB取字幕
 //若DB沒有該字幕，再利用downloadCaption()從YouTube取得真正的Caption
 if(isset($captionId)) {
-    $caption_res_from_db = getVideoCaption($captionId);
     if( isset($caption_res_from_db)) {  // Check if captions can be found in DB
         $caption = $caption_res_from_db;
         $code = 200;
         $discription = "ok";
     } else {  // If captions don't exist in DB, get them from YouTube API and store into DB
         try {
-            $caption = downloadCaption($youtube, $captionId);
+            $caption = downloadCaption($youtube, $captionId, $html, true);
         // $thumbnail = $youtube->thumbnail()
             $code = 200;
             $discription = "ok";
@@ -77,9 +73,10 @@ if(isset($captionId)) {
     'code' => $code,
     'discription' => $discription,
     'captionId' => $captionId,
-    'caption' => json_decode($caption)
+    'caption' => $caption
     ];
-    exit(json_encode($caption_obj));
+    file_put_contents('../caption2.txt', $caption);
+    exit(print_r($caption_obj, true));
 }
 function playlistItemsListByPlaylistId($youtube, $part, $params) {
     $params = array_filter($params);
