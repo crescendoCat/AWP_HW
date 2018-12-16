@@ -39,21 +39,21 @@ MYAPP.ToolBox = ({
    * caption: the caption array
    * value: time
    */
-  searchInCaption: function (caption, value) {
+  searchInCaption: function (caption, value, return_nearest=false) {
     // initial values for start, middle and end
     var ret;
-    caption.forEach(function(element, index) {
-        if(element.start <= value && value < element.end) {
-          ret = element.seq;
+    for(let i=0; i<caption.length; i++) {
+        let data = $(caption.get( i )).data();
+        if(data.start <= value && value < data.end) {
+            return caption.get( i );
         }
-      }
-    );
-    if(ret === undefined) {
-      return -1;
-    } else {
-      console.log(ret);
-      return ret;
+        if(return_nearest == true) {
+            if(data.end <= value && value <= $(caption.get( i+1 )).data().start ) {
+                return caption.get( i );
+            }
+        }
     }
+    return -1;
   },
 
   // init time branching on listener attaching function
@@ -135,7 +135,7 @@ MYAPP.TimeStamp = (function() {
               //_debug('is float style string');
               this.seconds = parseFloat(second);
             } else {
-              this.seconds = 0.0;
+              this.seconds = -1;
               //throw new MYAPP.Exception('Time stamp consturctor cannot identify this string: ' + second);
             }
 
@@ -212,6 +212,8 @@ MYAPP.CaptionEditor = (function() {
   _events,
   _max_seq,
   _caption_area_node,
+  _editor,
+
 
   captionCount = function(){
     return this.caption.length;
@@ -229,7 +231,6 @@ MYAPP.CaptionEditor = (function() {
       alert('Please include jquery apendencies to make sure CaptionEditor running well!');
       return;
     }
-    var frag = document.createDocumentFragment();
     if(caption === undefined) {
       frag.appendChild(_singleLineHTML({
         start: 0,
@@ -248,16 +249,15 @@ MYAPP.CaptionEditor = (function() {
         caption[i].start = start.valueOf();
         caption[i].dur = dur.valueOf();
         caption[i].end = end.valueOf();
-        frag.appendChild(_singleLineHTML(caption[i]));
+        $(div).append(_singleLineHTML(caption[i]));
         if(parseInt(caption[i].seq) > _max_seq) {
-          console.log(caption[i].seq);
+          //console.log(caption[i].seq);
           _max_seq = parseInt(caption[i].seq);
         }
         //store the caption record into the structure
         caption_ret[caption[i].seq] = caption[i];
       }
     }
-    jQuery(frag).appendTo(div);
     console.log("max_seq: "+_max_seq);
     return caption_ret;
   },
@@ -270,8 +270,7 @@ MYAPP.CaptionEditor = (function() {
  *   seq:     number
  */
   _singleLineHTML = function(conf) {
-    var card = document.createElement('div');
-        content = "\
+    var card = $("<div class='card shadow mt-2 editor-line'></div>").html("\
     <div class='card-body editor-line-body d-flex'>\
       <div class='d-flex flex-column mr-auto col-3 col-lg-2 editor-timestamp-container'>\
         <span class='editor-line-time-span'>\
@@ -286,11 +285,14 @@ MYAPP.CaptionEditor = (function() {
         <button class='btn btn-danger' id='btn-delete'>x</button>\
         <button class='btn btn-light' id='btn-add'>+</button>\
       </div>\
-    </div>";
-    card.setAttribute('class', 'card shadow mt-2 editor-line');
-    card.setAttribute('id', 'cap_' + conf.seq);
-    card.innerHTML = content;
-    _setTime(card, conf.start, conf.end);
+    </div>")
+
+
+    $(card).data(conf);
+    $(card).find('#start-time').val(new TStamp(conf.start).toString());
+    $(card).find('#end-time').val(new TStamp(conf.end).toString());
+
+
     return card;
   },
 
@@ -298,43 +300,42 @@ MYAPP.CaptionEditor = (function() {
 
   // to test a DOM node is a "card" of caption or not
   _isCard = function(card) {
-    if(card === undefined || card === null || !card.classList.contains('editor-line')) {
-      return false;
-    } else {
+    if($(card).hasClass('editor-line')) {
       return true;
+    } else {
+      return false;
     }
   },
 
 
-  _setTime = function(card, start, end) {
+  _getTime = function(card, as_number) {
     if(!_isCard(card)) {
       //throw new EditorException('unknow card element');
-      return;
+        return {start:'00:0.0', end: '00:0.0'};
     }
-    var start_t = new TStamp(start);
-    var end_t = new TStamp(end);
-    card.querySelector('#start-time').value = start_t.toString();
-    card.querySelector('#end-time').value = end_t.toString();
-  },
 
 
-  _getTime = function(card) {
-    if(!_isCard(card)) {
-      //throw new EditorException('unknow card element');
-      return {start:'00:0.0', end: '00:0.0'};
-    }
+    if(as_number === true)
+        return {
+            start: TStamp.timeStringToMillis(
+                $(card).find('#start-time').val()),
+            end:   TStamp.timeStringToMillis(
+                $(card).find('#end-time').val())
+        };
+
+
     return {
-      start: card.querySelector('#start-time').value,
-      end:   card.querySelector('#end-time').value
+        start: $(card).find('#start-time').val(),
+        end:   $(card).find('#end-time').val()
     };
   },
 
 
   _getSeq = function(card) {
     if(_isCard(card)) {
-      return;
+        return;
     } else {
-      return card.getAttribute('seq');
+        return $(card).data().seq;
     }
   },
 
@@ -342,104 +343,140 @@ MYAPP.CaptionEditor = (function() {
 
   // set a caption card as highlight
   _setFocusAndHighlight = function(card) {
-      if(card === undefined) {
-          return;
-      }
-
-      if(card.classList === undefined || !card.classList.contains('editor-line')) {
+      if(!_isCard(card)) {
           return;
       }
       // make sure there is exactly one caption are highlighted
       for(var i=0; i<_highlightedList.length; i++) {
-         _highlightedList[i].classList.remove('editor-line-body-highlight');
+         _highlightedList[i].removeClass('editor-line-body-highlight');
       }
       _highlightedList = [];
-      card.classList.add('editor-line-body-highlight');
+      $(card).addClass('editor-line-body-highlight');
       //console.log(_caption_area_node);
       // show the caption to the screen
       if(_caption_area_node !== undefined && _caption_area_node !== null) {
-         _caption_area_node.innerHTML = card.querySelector('#line-text').value;
+         $(_caption_area_node).text($(card).find('#line-text').val());
       }
-      _highlightedList.push(card);
+      _highlightedList.push($(card));
   },
 
 
   // insert a caption card after a spceific caption card
-  _insertLineAfter = function(target, conf) {
+  _insertLineAfter = function(target, conf, before=false) {
     var card = _findParentCard(target);
-    var card_time = _getTime(card);
+    console.log(card);
+    var target_time = _getTime(card, true); // return value will be number type second
     var end_time;
+    var prev = $(card).prev();
+
+    // check if the start time has been assigned
     if(conf.start === undefined) {
-      conf.start = TStamp.timeStringToMillis(card_time.end);
+        conf.start = target_time.end;
     } else {
-      var start = new TStamp(conf.start);
-      conf.start = start.valueOf();
+        conf.start = new TStamp(conf.start).valueOf();
     }
+
+    if(conf.start <= 0) {
+        conf.start = 0;
+    }
+    if(prev && _getTime(prev).end > conf.start) {
+        conf.start = _getTime(prev).end;
+    }
+
+
+    //check if the end time has been assigned
     if(conf.end === undefined) {
-      var millis = TStamp.timeStringToMillis(card_time.end);
+
       // check if this line has a sibling after itself,
       // if no, we can set the time as we like.
-      if(card.nextSibling === undefined || card.nextSibling === null) {
-        conf.end = millis + 2;
-      } else {
-        // if the card has a sibling, check the sibling's starting time.
-        var next_time = _getTime(card.nextSibling);
-        var next_start_millis = TStamp.timeStringToMillis(next_time.start);
-        if(millis + 2 >= next_start_millis) {
-          end_time = next_start_millis;
+        if($.isEmptyObject($(card).next())) {
+            conf.end = target_time.end + 2;
+
+
         } else {
-          end_time = millis + 2;
-        }
-        conf.end = end_time;
+        // if the card has a sibling, check the sibling's starting time.
+            var next_time = _getTime($(card).next(), true);
+
+
+            if(target_time.end + 2 >= next_time.start) {
+                conf.end = next_time.start;
+            } else {
+                conf.end = target_time.end + 2;
+            }
       }
+
+
+    //if the end time has been assigned     
     } else {
-      var end = new TStamp(conf.end);
-      conf.end = end.valueOf();
+        // convert conf.end to number
+        conf.end = new TStamp(conf.end).valueOf();
     }
+
+
     if(conf.end - conf.start < 0) {
-      alert('字幕長度不可為負!');
-      return -1;
+        alert('字幕長度不可為負!');
+        return -1;
     }
     console.log(conf);
     if(conf.end - conf.start < 0.1) {
-      alert('字幕長度不可小於0.1秒!');
-      return -1;
+        alert('字幕長度不可小於0.1秒!');
+        return -1;
     }
     if(conf.text === undefined) {
       conf.text = '';
     }
+
+
     conf.seq = ++_max_seq;
     conf.dur = conf.end - conf.start;
     var line = _singleLineHTML(conf);
-    var new_node = _div_node.insertBefore(line, card.nextSibling);
-    $(new_node.querySelector('.editor-time-input')).change(_timeInputChangedHandler);
-    $(new_node.querySelector('#line-text')).change(_textInputChangedHandler);   
-    _caption[conf.seq] = conf;
+    if(before === true) {
+        line.insertBefore($(card));
+    } else {
+        line.insertBefore($(card).next());
+    }
+    line.find('.editor-time-input').change(_timeInputChangedHandler);
+    line.find('#line-text').change(_textInputChangedHandler);
+
+
     _captionInsertedEventHandler(card, conf);   //execute the call back routine
-    return new_node;
+    return line;
   },
 
 
   // if the node is a inner element in the card 
   // find the reference of the parent of the node
   _findParentCard = function(node) {
-    while(!node.classList.contains('editor-line')) {
-      node = node.parentNode;
-    }
-    return node;
+      if($(node).hasClass('editor-line')) {
+          return node;
+      }
+      node = $(node).parents('.editor-line').get( 0 );
+    
+
+      if(!$.isEmptyObject(node)) {
+          return node;
+      } else {
+          return null;
+      }
   },
 
 
   // find the specific caption in _caption array
   // by passing a DOM node
   _findCardCaption = function(card) {
-    if(_isCard(card)) {
+      if(!_isCard(card)) {
+          return null;
+      }
       // since the id attribute is like 'cap-xx', and the 'xx' part
       // is the id number
-      return _caption[card.getAttribute('id').slice(4)];
-    } else {
+      cards = $(":data(seq)");
+      for(let i=0; i < cards.length; i++) {
+          if($(cards.get( i )).data().seq == $(card).data().seq) {
+             return cards.get( i );
+          }
+      }
+
       return null;
-    }
   },
 
 
@@ -451,86 +488,83 @@ MYAPP.CaptionEditor = (function() {
     src = e.target || e.srcElement;
     // actual work: update label
 
-    //console.log(src.classList.contains('editor-line'));
+    console.log(src);
     //console.log(e);
 
     var card = _findParentCard(src);
     if(_isCard(card)) {
-      _setFocusAndHighlight(card);
-      if(_player !== undefined) {
+        _setFocusAndHighlight(card);
+        if(_player !== undefined) {
         //console.log(_getTime(card).start);
-        _player.seekTo(new TStamp(_getTime(card).start).valueOf(), true);
-      } 
-    }
+          _player.seekTo(_getTime(card, true).start, true);
+        } 
+    } 
 
     if(src.id === "btn-delete") {
-      _captionDeletedEventHandler(card, _findCardCaption(card));
+        _captionDeletedEventHandler(card, $(card).data());
       
-      console.log(_caption.splice(card.getAttribute('id').slice(4), 1));
-      card.remove();
+        console.log($(card).data().seq);
+        $(card).remove();
     } else if(src.id === "btn-add") {
-      _insertLineAfter(src, {});
+        _insertLineAfter(src, {});
     }
 
     // no bubble
     if (typeof e.stopPropagation === "function") {
-      e.stopPropagation();
+        e.stopPropagation();
     }
     if (typeof e.cancelBubble !== "undefined") {
-      e.cancelBubble = true;
+        e.cancelBubble = true;
     }
     // prevent default action
     if (typeof e.preventDefault === "function") {
-      e.preventDefault();
+        e.preventDefault();
     }
     if (typeof e.returnValue !== "undefined") {
-      e.returnValue = false;
+        e.returnValue = false;
     }
   },
 
   _divKeyUpHandler = function(e) {
-    var src, parts;
-    // get event and source element
-    e = e || window.event;
-    src = e.target || e.srcElement;
-    // actual work: update label
+      var src, parts;
+      // get event and source element
+      e = e || window.event;
+      src = e.target || e.srcElement;
+      // actual work: update label
 
-    //console.log(src.selectionStart, src.value);
+      console.log(src.value);
 
-    if(src.id === "line-text") {
-      if(e.key === "Enter" && !e.shiftKey) {
-        var line_text = src.value;
-        var new_content = line_text.slice(src.selectionStart);
-        console.log(new_content);
-        var new_node = _insertLineAfter(src, {
-          text: new_content
-        });
-        if(new_node !== -1) { // insertion success, change the original value
-          src.value = line_text.slice(0, src.selectionStart-1);
-          var new_line_text = new_node.querySelector("#line-text");
-          new_line_text.setSelectionRange(0, 0);
+      if(src.id === "line-text") {
+          if(e.key === "Enter" && !e.shiftKey) {
+              var line_text = src.value;
+              var new_content = line_text.slice(src.selectionStart);
+              console.log(new_content);
+              var new_node = _insertLineAfter(src, {
+                  text: new_content
+              });
+              if(new_node !== -1) { // insertion success, change the original value
+                  src.value = line_text.slice(0, src.selectionStart-1);
+                  var new_line_text = new_node.find("#line-text");
+                  //new_line_text.setSelection(0, 0);
+              }
+          }
+      }
+
+
+      // no bubble
+      if (typeof e.stopPropagation === "function") {
+          e.stopPropagation();
+      }
+      if (typeof e.cancelBubble !== "undefined") {
+          e.cancelBubble = true;
         }
+      // prevent default action
+      if (typeof e.preventDefault === "function") {
+          e.preventDefault();
       }
-      if(src.value !== _findCardCaption(_findParentCard(src)).text) {
-        //_textInputChangedHandler(_findParentCard(src));
+      if (typeof e.returnValue !== "undefined") {
+          e.returnValue = false;
       }
-    }
-
-
-    // no bubble
-    if (typeof e.stopPropagation === "function") {
-      e.stopPropagation();
-    }
-    if (typeof e.cancelBubble !== "undefined") {
-      e.cancelBubble = true;
-    }
-    // prevent default action
-    if (typeof e.preventDefault === "function") {
-      e.preventDefault();
-    }
-    if (typeof e.returnValue !== "undefined") {
-      e.returnValue = false;
-    }
   },
 
 
@@ -546,32 +580,29 @@ MYAPP.CaptionEditor = (function() {
 
 
     setInterval(function() {
-      var now_time = _player.getCurrentTime();
-      //using current index
-      if (! ((-0.005 > now_time - _video_time || now_time - _video_time > 0.005) ) ) {
-          return;
-      }
-      //console.log(_caption);
-      if (_caption === undefined) {
-          return;
-      }
-      var index = tool.searchInCaption(_caption, now_time);
-      if (index != -1) {  
-            var cap_node      = _div_node.querySelector('#cap_'+index),
-                topPos        = cap_node.offsetTop,
-                parentHeight  = _div_node.parentNode.clientHeight,
-                nodeHeight    = cap_node.clientHeight,
-                scrollTop     = _div_node.parentNode.scrollTop;
+        var now_time = _player.getCurrentTime();
+        //using current index
+        if (! ((-0.005 > now_time - _video_time || now_time - _video_time > 0.005) ) ) {
+            return;
+        }
+        var cap = tool.searchInCaption($(":data(seq)"), now_time);
+        if (cap != -1) {
+              var cap_node      = $(cap),
+                  pos        = $(cap).position(),
+                  parentHeight  = $(_div_node).innerHeight(),
+                  nodeHeight    = $(cap).outerHeight(),
+                  scrollTop     = $(_div_node).scrollTop();
 
-          if (topPos < scrollTop || topPos > scrollTop + parentHeight - nodeHeight) {
-              $(_div_node.parentNode).scrollTop(topPos - parentHeight + nodeHeight);
-          }
-          _setFocusAndHighlight(cap_node);
-      } else {
-          _caption_area_node.innerHTML = '';
-      }
+            console.log(pos.top, parentHeight, nodeHeight, scrollTop);
+            if (pos.top < 0 || pos.top > parentHeight - nodeHeight) {
+                $(_div_node).scrollTop(scrollTop + pos.top - $(_div_node).offset().top);
+            }
+            _setFocusAndHighlight(cap_node);
+        } else {
+            $(_caption_area_node).text('');
+        }
 
-      _video_time = now_time;
+        _video_time = now_time;
     }, 100);
     console.log(_player.getPlayerState());
   },
@@ -647,128 +678,160 @@ MYAPP.CaptionEditor = (function() {
   _timeInputChangedHandler = function() {
     //is there a better way to avoid those complex
     //time string->value/value->string casting?
-    var card = _findParentCard(this);
+    var card = $(_findParentCard(this));
     if(_isCard(card)) {
       //since id is encoded as cap_#id
-      var cap_obj =  _findCardCaption(card);
-      var prev_card_obj = _findCardCaption(card.previousSibling);
-      var next_card_obj = _findCardCaption(card.previousSibling);
-      var second = TStamp.timeStringToMillis(this.value);
+      var cap_obj =  card.data();
+      var prev_card_obj = _getTime(card.prev(), true);
+      var next_card_obj = _getTime(card.next(), true);
+      var second = new TStamp(this.value).valueOf();
 
+      console.log(cap_obj, prev_card_obj, next_card_obj);
+
+      if(second < 0) {
+          $(this).val(new TStamp(cap_obj.start).toString());
+      }
 
       if(this.id === 'start-time') {
-          if((_isCard(card.previousSibling) &&
+          if((_isCard(card.prev()) &&
               prev_card_obj.end > second) ||
               second > cap_obj.end) {
-              this.value = TStamp.millisToTimeString(cap_obj.start*1000);
+              $(this).val(new TStamp(cap_obj.start).toString());
           } else {
               cap_obj.start = second;
               _captionUpdatedEventHandler(card, cap_obj);
+              $(card).data().start = second;
           }
 
 
       } else if(this.id === 'end-time') {
           console.log(cap_obj.start);
-          if((_isCard(card.nextSibling) &&
+          if((_isCard(card.next()) &&
               next_card_obj.start < second) ||
               second < cap_obj.start) {
-              this.value = TStamp.millisToTimeString(cap_obj.end*1000);
+              $(this).val(new TStamp(cap_obj.end).toString());
           } else {
+              cap_obj.end = second;
               _captionUpdatedEventHandler(card, cap_obj);
+              $(card).data().end = second;
           }
       }
     }
   },
 
   _textInputChangedHandler = function(e) {
-    var src, parts;
-    // get event and source element
-    e = e || window.event;
-    src = e.target || e.srcElement;
+      var src, parts;
+      // get event and source element
+      e = e || window.event;
+      src = e.target || e.srcElement;
 
-    var card = _findParentCard(src);
-    _findCardCaption(card).text = src.value;
-    _captionUpdatedEventHandler(card, _findCardCaption(card));
+
+      console.log(src);
+      var card = _findParentCard(src);
+      $(card).data().text = src.value;
+      _captionUpdatedEventHandler(card, _findCardCaption(card));
   },
 
 
   _loadCaption = function(video_id, caption) {
-    _div_node.innerHTML = '';
-    _id  = video_id;
-    _highlightedList = [];
-    if(caption === undefined || caption === null) {
-      var caption_req_url = "api/caption.php?videoId=" + video_id;
-      $.get(caption_req_url, function(response) {
-        var caption_arr;
-        if(response) {
-          //console.log(response);
-          var res = JSON.parse(response);
+      $(_div_node).text('');
+      _id  = video_id;
+      _highlightedList = [];
 
-          if(res['code']==200) {
-            caption_arr = res['caption'];
-            //storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
-            _caption_id = res['captionId'];
-          }
-        }
 
-        _caption = createCaptionLines(_div_node, caption_arr);
-        var time_input_nodes = _div_node.querySelectorAll(".editor-time-input");
-        time_input_nodes.forEach(function(element) {
-          $(element).change(_timeInputChangedHandler);
-        });
-        var text_input_nodes = _div_node.querySelectorAll("#line-text");
-        text_input_nodes.forEach(function(element) {
-          $(element).change(_textInputChangedHandler);
-        });
-      });
-    }
+      if(caption === undefined || caption === null) {
+          var caption_req_url = "api/caption.php?videoId=" + video_id;
+          $.get(caption_req_url, function(response) {
+              var caption_arr;
+              if(response) {
+                var res = JSON.parse(response);
+
+                if(res['code']==200) {
+                  caption_arr = res['caption'];
+                  //storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
+                  _caption_id = res['captionId'];
+                }
+            }
+
+            createCaptionLines(_div_node, caption_arr);
+            $(_div_node).find(".editor-time-input").change(_timeInputChangedHandler);
+            $(_div_node).find(".editor-line-text").change(_textInputChangedHandler);
+          });
+      }
   };
   //end of private member section
 
   Constr = function(div, config) {
-    var editor = document.getElementById(div);
-    _div = div;
-    _div_node = editor;
-    _id  = config.videoId;
-    _highlightedList = [];
-    _events = config.events;
-    _caption_area_node = document.getElementById(config.captionArea);
-    tool.addListener(editor, 'keyup', _divKeyUpHandler);
-    tool.addListener(editor, 'click', _divClickHandler);
+      var editor = document.getElementById(div);
+      $(editor).html("\
+        <div class='card shadow mt-2' id='caption-insert'>\
+          <div class='card-body editor-line-body d-flex'>\
+            <textarea class='editor-line-text d-flex col-9 col-lg-9' id='line-text' placeholder='輸入字幕'></textarea>\
+            <div class='d-flex flex-column col-3 col-lg-3'> \
+              <button class='btn btn-danger' id='btn-delete'>x</button>\
+              <button class='btn btn-light' id='btn-add'>+</button>\
+            </div>\
+          </div>\
+        </div>\
+        <div id='inner-editor'></div>");
+      _editor = editor;
+      $(editor).find('#btn-delete').click(function(e) {
+          $(editor).find('#line-text').val('');
+      });
+      $(editor).find('#btn-add').click(function(e) {
+          if(!_player) {
+              return;
+          }
+          var play_time = _player.getCurrentTime(), 
+              cap = tool.searchInCaption($(":data(seq)"), play_time, true);
+          t = _getTime(cap, true);
+          console.log(t, play_time);
+          if(t.end < play_time) {
+              _insertLineAfter(cap, {
+                  start: play_time,
+                  text: $(editor).find('#line-text').val()
+              });
+          } else {
+              _insertLineAfter(cap, {
+                  start: t.start - 0.5,
+                  end: t.start,
+                  text: $(editor).find('#line-text').val()
+              },
+              true);
+          }
+      })
+      _div = 'inner-editor';
+      _div_node = document.getElementById('inner-editor');
+      console.log($(_div_node).parent());
+      _id  = config.videoId;
+      _highlightedList = [];
+      _events = config.events;
+      _caption_area_node = document.getElementById(config.captionArea)
+      $(_div_node).keyup(_divKeyUpHandler);
+      $(_div_node).click(_divClickHandler);
 
 
     // using ajax the fetch the caption data from server
-    if(config.caption === undefined || config.caption === null) {
-      var caption_req_url = "api/caption.php?videoId=" + config.videoId;
-      console.log('load caption');
-      $.get(caption_req_url, function(response) {
-        console.log('caption response');
-        var caption_arr;
-        if(response) {
-          //console.log(response);
-          var res = JSON.parse(response);
+      if(caption === undefined || caption === null) {
+          var caption_req_url = "api/caption.php?videoId=" + video_id;
+          $.get(caption_req_url, function(response) {
+              var caption_arr;
+              if(response) {
+                console.log(response);
+                var res = JSON.parse(response);
 
-          if(res['code']==200) { // successed
-            caption_arr = res['caption'];
-            _caption_id = res['captionId'];
-          }
-        }
+                if(res['code']==200) {
+                  caption_arr = res['caption'];
+                  //storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
+                  _caption_id = res['captionId'];
+                }
+            }
 
-        // create and maintain the _caption structure
-        _caption = createCaptionLines(_div_node, caption_arr);
-
-        // adding listener when user change the values of the captions
-        var time_input_nodes = _div_node.querySelectorAll(".editor-time-input");
-        time_input_nodes.forEach(function(element) {
-          $(element).change(_timeInputChangedHandler);
-        });
-
-        var text_input_nodes = _div_node.querySelectorAll("#line-text");
-        text_input_nodes.forEach(function(element) {
-          $(element).change(_textInputChangedHandler);
-        });
-      });
-    }
+            createCaptionLines(_div_node, caption_arr);
+            $(_div_node).find(".editor-time-input").change(_timeInputChangedHandler);
+            $(_div_node).find(".editor-line-text").change(_textInputChangedHandler);
+          });
+      }
   }
 
 
@@ -785,17 +848,6 @@ MYAPP.CaptionEditor = (function() {
 })();
 
 console.log('after redefine: '+ MYAPP.CaptionEditor.oldAttribute);
-
-
-console.log('test time stamp');
-var a = new MYAPP.TimeStamp('02:5.8'),
-    b = new MYAPP.TimeStamp('abc'),
-    c = new MYAPP.TimeStamp('.4'),
-    d = new MYAPP.TimeStamp(5299.4);
-console.log(a.debug);
-console.log(b.debug);
-console.log(c.debug);
-console.log(d.debug);
 
 
 //using in getting a url request key-value pair

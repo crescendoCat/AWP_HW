@@ -47,3 +47,12 @@
 	text-align: center;
 	margin-top: -.5rem;
 }
+
+#caption-editor {
+	height: 100%;
+}
+
+#inner-editor {
+	 height:60%;
+	 overflow-y:scroll;
+}

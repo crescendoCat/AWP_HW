@@ -8,6 +8,8 @@ require_once "utility.php";
 <html style="height:100%">
 <head>
 <?php echoBootstrapAndJqueryDependencies(); ?>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 
 <script src="assets/libraries/js-session-library.js"></script>
 <script src="assets/javascripts/caption-editor.js"></script>
@@ -17,7 +19,7 @@ require_once "utility.php";
 <?php echoNavbar()?>
 <div class="container-fluid" style="padding-top:5rem;height:100%">
   <div class="row" style="height:100%">
-    <div class="col-6" style="height:100%; overflow-y:scroll">
+    <div class="col-6" >
       <div class="col-12">
        <form id="form">
           <input type="file" name="file" id="file" />
@@ -95,7 +97,7 @@ function onCaptionUpdated(event) {
 			data: JSON.stringify(obj)
 		},
 	  function(data) {
-	  	alert('insert result: '+ data);
+	  	alert('update result: '+ data);
 	  	console.log(data);
 	  }
 	);
@@ -116,7 +118,7 @@ function onCaptionDeleted(event) {
 			data: JSON.stringify(obj)
 		},
 	  function(data) {
-	  	alert('insert result: '+ data);
+	  	alert('delete result: '+ data);
 	  	console.log(data);
 	  }
 	);

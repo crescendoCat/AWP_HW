@@ -57,7 +57,7 @@ function getVideoCaption($caption_id) {
             $caption_item = [
                 'seq' => $row['sequence'],
                 'start' => $row['start'],
-                'end' => $row['start'] + $row['duration'],
+                'end' => intval($row['start']) + intval($row['duration']),
                 'dur' => $row['duration'],
                 'text' => $row['content']
             ];
@@ -277,6 +277,7 @@ function insertVideoCaption(
 		
 		$sql=sprintf("insert into Caption(captionId,sequence,start,duration,content)			values('%s',%d,'%s','%s','%s') ;",$captionId,$sequence,$start,$duration,$content);
         $result = $conn->query($sql);
+
 		if($result===True){
 			debug_to_console("Succeeded to insert into table caption;");
 		}else{
@@ -370,6 +371,7 @@ function insertVideoCaptionPassingArray(
         debug_to_console("Succeeded to insert into table caption;");
         //die("Query Failed: ".mysqli_error($conn));
     }else{
+        echo $sql;
         debug_to_console("Faile to insert into table caption;");
         die("Query Failed: ".mysqli_error($conn));
     }
