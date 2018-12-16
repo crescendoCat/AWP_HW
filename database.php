@@ -89,20 +89,20 @@ function getVideoCaption($caption_id) {
 // }
 
 function getVideoTitle($conn, $youtube_id) {
-  $query = "SELECT Title FROM ourtube.video WHERE YoutubeID = '".$youtube_id."'";
+  $query = "SELECT title FROM ourtube.youtubevideo WHERE videoId = '".$youtube_id."'";
   $result = $conn->query($query);
     if(!$result) {
         die("Query failed: ". mysqli_error($conn));
     }
     if($row = $result->fetch_assoc()) {
-        return $row['Title'];
+        return $row['title'];
     } else {
         return -1;
     }
 }
 
 function getVideoCount($conn) {
-    $query = 'SELECT COUNT(YoutubeID) as video_num FROM ourtube.video';
+    $query = 'SELECT COUNT(videoId) as video_num FROM ourtube.youtubevideo';
     $result = $conn->query($query);
     if(!$result) {
         die("Query failed: ". mysqli_error($conn));
@@ -121,39 +121,36 @@ function getVideoList($conn, $page, $size) {
         die("Connection failed: " . $conn->connect_error);
     }
     
-    $query = 'SELECT YoutubeID, VoicetubeID, Title FROM ourtube.video LIMIT '.$page*$size.','.$size;
+    $query = 'SELECT videoId, thumbnail_url, title FROM ourtube.youtubevideo LIMIT '.$page*$size.','.$size;
     $result = $conn->query($query);
     
     if(!$result) {
         die("Query failed: ". mysqli_error($conn));
     }
-    $json_str = '[
-        ';
-    $first = 1;
+    $list_array = array();
     while($row = $result->fetch_assoc()){
-        $thumbnail_link = $host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/'.$row['YoutubeID'].'.jpg';
+        //$thumbnail_link = $host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/'.$row['YoutubeID'].'.jpg';
         // $thumbnail_link = glob($host.$database_thumbnail_folder_path.$row['VoicetubeID'].'/*.jpg');
-        if(!$first) {
-            $json_str .= ',';
-        }
-        $json_str .= '{
-            "videoID":"'.$row['YoutubeID'].'",
-            "thumbnail_link":"'.$thumbnail_link.'",
-            "title":"'.$row['Title'].'"
-        }';
+        //if(!$first) {
+        //    $json_str .= ',';
+        //}
+        $list_obj = [
+            'videoID' => $row['videoId'],
+            'thumbnail_link' => $row['thumbnail_url'],
+            'title' => $row['title']
+        ];
+        print_r($list_obj);
+        array_push($list_array, $list_obj);
+        
         // $json_str .= '{
         //     "videoID":"'.$row['YoutubeID'].'",
         //     "thumbnail_link":"'.$thumbnail_link[0].'",
         //     "title":"'.$row['Title'].'"
         // }';
-        $first = 0;
+        //$first = 0;
     }
-
-    $json_str .= '
-]';
-    return $json_str;
+    return json_encode($list_array);
 }
-
 function getVideoSearchList($conn, $q, $page, $size) { 
     global $database_thumbnail_folder_path, $host;
     if($conn->connect_error) {

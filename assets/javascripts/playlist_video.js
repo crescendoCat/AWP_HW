@@ -112,13 +112,14 @@ function getVideosCaptions(video_id) {
   });
 }
 */
-function getTableCaption(captions) {
+function getTableCaption(captions, video_id) {
   var captions_tbody = document.getElementById('table_caption').getElementsByTagName('tbody');
-
+  var hint_div = document.getElementById('caption_hint');
   if(captions.length == 0) {
     var no_captions_alert = "<tr><th>This video has no captions!</th></tr>";
-
+    
     $(no_captions_alert).appendTo(captions_tbody);
+    $(hint_div).html("<a href=\"caption-editor.php?youtubeid=" + video_id + "\">Create Caption Your self!</a>");
   } else {
     for(var i in captions) {
       var caption_row = 
@@ -132,7 +133,7 @@ function getTableCaption(captions) {
 
       $(caption_row).appendTo(captions_tbody);
     }
-
+    $(hint_div).html("<a href=\"caption-editor.php?youtubeid=" + video_id + "\">Edit Caption</a>");
   }
 }
 

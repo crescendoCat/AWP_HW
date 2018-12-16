@@ -60,8 +60,9 @@ include('database.php');
             <table border="0" id="table_caption">
                 <tbody></tbody>
             <!-- php echoTabldCaption(getJsonCaption($conn, $youtubeid));  -->
-            </table>      
+            </table>     
           </div>
+          <div id="caption_hint"></div> 
         </div>
       </div>
       <!-- The embed video is here-->

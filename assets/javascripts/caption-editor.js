@@ -232,11 +232,7 @@ MYAPP.CaptionEditor = (function() {
       return;
     }
     if(caption === undefined) {
-      frag.appendChild(_singleLineHTML({
-        start: 0,
-        end  : 2,
-        content: ''
-      }));
+        return;
     } else {
       var count = caption.length;
       var caption_ret = [];
@@ -784,6 +780,15 @@ MYAPP.CaptionEditor = (function() {
           }
           var play_time = _player.getCurrentTime(), 
               cap = tool.searchInCaption($(":data(seq)"), play_time, true);
+          if(cap < 0) {
+              createCaptionLines(_div_node, [{
+                  start: 0,
+                  dur:   2,
+                  end:   2,
+                  text:  $(editor).find('#line-text').val()
+              }]);
+              return;
+          }
           t = _getTime(cap, true);
           console.log(t, play_time);
           if(t.end < play_time) {

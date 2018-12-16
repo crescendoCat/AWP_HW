@@ -105,7 +105,7 @@ function onPlayerReady(event) {
 
       if(res['code']==200) {
         var caption_arr = res['caption'];
-        getTableCaption(caption_arr);
+        getTableCaption(caption_arr, video_id);
         storeCaptionArrayIntoDB(res['captionId'], video_id, caption_arr);
         // set global caption variable as caption_arr
         caption = caption_arr;
@@ -121,11 +121,11 @@ function onPlayerReady(event) {
         scrollToCaption(0, start, end);
       } else {
         var no_caption = [];
-        getTableCaption(no_caption);
+        getTableCaption(no_caption, video_id);
       }
     } else {
       var no_caption = [];
-      getTableCaption(no_caption);
+      getTableCaption(no_caption, video_id);
     }
   });
 	
