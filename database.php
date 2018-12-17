@@ -134,12 +134,19 @@ function getVideoList($conn, $page, $size) {
         //if(!$first) {
         //    $json_str .= ',';
         //}
+        //$title = mb_convert_encoding($row['title'], 'utf-8', 'iso-8859-1');
+        //echo 'true';
+        //if (mb_detect_encoding($title, 'utf-8', true) === false) {
+        //    
+        //    $title = mb_convert_encoding($title, 'utf-8', 'iso-8859-1');
+        //}
+        echo bin2hex($row[title]).'<br>';
         $list_obj = [
             'videoID' => $row['videoId'],
             'thumbnail_link' => $row['thumbnail_url'],
             'title' => $row['title']
         ];
-        print_r($list_obj);
+        //print_r($list_obj);
         array_push($list_array, $list_obj);
         
         // $json_str .= '{
